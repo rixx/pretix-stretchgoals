@@ -6,11 +6,11 @@ class PluginApp(AppConfig):
     verbose_name = 'A pretix plugin to chart average prices over time'
 
     class PretixPluginMeta:
-        name = 'A pretix plugin to chart average prices over time'
+        name = 'Chart average prices over time'
         author = 'Tobias Kunze'
         description = 'Chart the average price of tickets sold over time, and optionally display them publicly.'
         visible = True
-        version = '1.0.0'
+        version = '0.0.1'
 
     def ready(self):
         from . import signals  # NOQA
