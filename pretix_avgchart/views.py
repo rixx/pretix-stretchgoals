@@ -1,9 +1,9 @@
-from django.views.generic import View
+from django.views.generic import TemplateView
 
 
-class ChartView(View):
-    pass
+class ChartView(TemplateView):
+    template_name = 'pretixplugins/avgchart/chart.html'
 
 
-class SettingsView(View):
-    pass
+class SettingsView(TemplateView):
+    template_name = 'pretixplugins/avgchart/settings.html'

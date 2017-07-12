@@ -7,7 +7,6 @@ from pretix.control.signals import nav_event
 @receiver(nav_event, dispatch_uid='avgchart_nav')
 def navbar_info(sender, request, **kwargs):
     url = resolve(request.path_info)
-    import pdb; pdb.set_trace()
     return [{
         'label': _('Chart Averages'),
         'icon': 'line-chart',
