@@ -1,8 +1,11 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
+from i18nfield.forms import I18nForm, I18nFormField, I18nTextarea
 from pretix.base.forms import SettingsForm
+from pretix.base.models import Item
 
 
-class AvgchartSettingsForm(SettingsForm):
+class AvgchartSettingsForm(I18nForm, SettingsForm):
     avgchart_start_date = forms.DateField(
         required=False,
         label=_('Start date'),
@@ -19,8 +22,8 @@ class AvgchartSettingsForm(SettingsForm):
         help_text=_('By default, the chart is only shown in the backend.')
     )
     avgchart_items = forms.ModelMultipleChoiceField(
-        required=False,
         Item.objects.all(),
+        required=False,
         label=_('Ticket types'),
         help_text=_('Tickets to be included in the calculation.'),
     )
@@ -34,9 +37,10 @@ class AvgchartSettingsForm(SettingsForm):
         label=_('Target value'),
         help_text=_('Do you need to reach a specific goal?')
     )
-    avgchart_public_text = forms.TextField(
+    avgchart_public_text = I18nFormField(
         required=False,
-        label=_('Text shown on the public page')
+        label=_('Text shown on the public page'),
+        widget=I18nTextarea
     )
 
 
