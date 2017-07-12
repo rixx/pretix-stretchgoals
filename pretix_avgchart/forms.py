@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 from i18nfield.forms import I18nForm, I18nFormField, I18nTextarea
 from pretix.base.forms import SettingsForm
@@ -46,6 +47,14 @@ class AvgchartSettingsForm(I18nForm, SettingsForm):
 
     def __init__(self, *args, **kwargs):
         """ Reduce possible friends_ticket_items to items of this event. """
-        event = kwargs.pop('event')
+        self.event = kwargs.pop('event')
         super().__init__(*args, **kwargs)
-        self.fields['avgchart_items'].queryset = Item.objects.filter(event=event)
+        self.fields['avgchart_items'].queryset = Item.objects.filter(event=self.event)
+
+    def save(self, *args, **kwargs):
+        self.event.settings._h.add_type(
+            QuerySet,
+            lambda queryset: ','.join([str(element.pk) for element in queryset]),
+            lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',')]
+        )
+        super().save(*args, **kwargs)
