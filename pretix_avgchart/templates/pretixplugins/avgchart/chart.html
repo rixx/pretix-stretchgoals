@@ -1,9 +1,23 @@
-{% extends "pretixcontrol/event/base.html" %}
-{% load i18n %}
+{% extends "pretixcontrol/items/base.html" %}
 {% load bootstrap3 %}
+{% load i18n %}
+{% load staticfiles %}
 {% block title %} {% trans "Average ticket prices" %} {% endblock %}
 {% block content %}
-    <h1>{% trans "Average ticket prices" %}</h1>
+    <h1>
+        {% trans "Average ticket prices" %}
+        <small><a href="{% url "plugins:pretix_avgchart:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a></small>
+    </h1>
 
-    … coming soon!
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% trans "Average ticket prices" %}</h3>
+        </div>
+        <div class="panel-body">
+            <div id="avg_chart" class="chart"></div>
+        </div>
+    </div>
+
+    <script type="application/json" id="avg-data">{{ data|safe }}</script>
+    <script type="application/javascript" src="{% static "pretixplugins/avgchart/avgchart.js" %}"></script>
 {% endblock %}
