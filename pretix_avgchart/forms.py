@@ -55,6 +55,6 @@ class AvgchartSettingsForm(I18nForm, SettingsForm):
         self.event.settings._h.add_type(
             QuerySet,
             lambda queryset: ','.join([str(element.pk) for element in queryset]),
-            lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',')]
+            lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',') if element]
         )
         super().save(*args, **kwargs)

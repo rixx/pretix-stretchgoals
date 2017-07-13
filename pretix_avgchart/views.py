@@ -45,7 +45,7 @@ class ChartView(ChartContainingView, TemplateView):
         self.request.event.settings._h.add_type(
             QuerySet,
             lambda queryset: ','.join([str(element.pk) for element in queryset]),
-            lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',')]
+            lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',') if element]
         )
         include_pending = self.request.event.settings.avgchart_include_pending or False
         items = self.request.event.settings.get('avgchart_items', as_type=QuerySet) or []
