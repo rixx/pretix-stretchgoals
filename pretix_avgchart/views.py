@@ -29,6 +29,21 @@ class ChartView(TemplateView):
         for offset in range((end_date - start_date).days + 1):
             yield start_date + timedelta(days=offset)
 
+    def get_context_data(self):
+        ctx = super().get_context_data()
+        include_pending = self.request.event.settings.avgchart_include_pending or False
+        items = self.request.event.settings.avgchart_items or []
+        start_date = self.request.event.settings.avgchart_start_date or self.get_start_date(items, include_pending)
+        end_date = self.request.event.settings.avgchart_end_date or self.get_end_date(items, include_pending)
+        ctx.update({
+            'target': self.request.event.settings.avgchart_target_value,
+            {
+                'date': date,
+                'price': self.get_average_price(start_date, date, items, include_pending)
+            } for date in self.get_date_range(start_date, end_date)
+        })
+
+
 class SettingsView(EventSettingsFormView):
     form_class = AvgchartSettingsForm
     template_name = 'pretixplugins/avgchart/settings.html'
