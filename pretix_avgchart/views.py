@@ -51,13 +51,14 @@ class ChartView(ChartContainingView, TemplateView):
         items = self.request.event.settings.get('avgchart_items', as_type=QuerySet) or []
         start_date = self.request.event.settings.get('avgchart_start_date', as_type=date) or self.get_start_date(items, include_pending)
         end_date = self.request.event.settings.get('avgchart_end_date', as_type=date) or self.get_end_date(items, include_pending)
-        ctx.update({
-            'target': self.request.event.settings.avgchart_target_value,
-            'data': json.dumps([{
+        chart_data = {
+            'data': [{
                 'date': date.strftime('%Y-%m-%d'),
-                'price': self.get_average_price(start_date, date, items, include_pending) or 0
-            } for date in self.get_date_range(start_date, end_date)])
-        })
+                'price': self.get_average_price(start_date, date, items, include_pending) or 0,
+            } for date in self.get_date_range(start_date, end_date)],
+            'target': self.request.event.settings.avgchart_target_value
+        }
+        ctx['data'] = json.dumps(chart_data)
         return ctx
 
 
