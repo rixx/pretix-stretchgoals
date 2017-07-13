@@ -3,6 +3,8 @@ pretix-avgchart
 
 This is a plugin for `pretix`_ that charts average prices over time.
 
+.. image:: ./assets/screenshot.png
+
 Development setup
 -----------------
 
