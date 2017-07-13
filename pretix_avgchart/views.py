@@ -1,16 +1,18 @@
 from datetime import date, timedelta
+import json
 
 from django.core.urlresolvers import reverse
 from django.db.models import Avg
 from django.db.models.query import QuerySet
 from django.views.generic import TemplateView
 from pretix.base.models import Item, OrderPosition
+from pretix.control.views import ChartContainingView
 from pretix.control.views.event import EventSettingsFormView
 
 from .forms import AvgchartSettingsForm
 
 
-class ChartView(TemplateView):
+class ChartView(ChartContainingView, TemplateView):
     template_name = 'pretixplugins/avgchart/chart.html'
 
     def get_queryset(self, items, include_pending):
@@ -51,11 +53,12 @@ class ChartView(TemplateView):
         end_date = self.request.event.settings.get('avgchart_end_date', as_type=date) or self.get_end_date(items, include_pending)
         ctx.update({
             'target': self.request.event.settings.avgchart_target_value,
-            'data': [{
-                'date': date,
-                'price': self.get_average_price(start_date, date, items, include_pending)
-            } for date in self.get_date_range(start_date, end_date)]
+            'data': json.dumps([{
+                'date': date.strftime('%Y-%m-%d'),
+                'price': self.get_average_price(start_date, date, items, include_pending) or 0
+            } for date in self.get_date_range(start_date, end_date)])
         })
+        return ctx
 
 
 class SettingsView(EventSettingsFormView):
