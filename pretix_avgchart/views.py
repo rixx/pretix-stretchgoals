@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.core.urlresolvers import reverse
 from django.views.generic import TemplateView
+from pretix.base.models import OrderPosition
 from pretix.control.views.event import EventSettingsFormView
 
 from .forms import AvgchartSettingsForm
@@ -8,6 +11,23 @@ from .forms import AvgchartSettingsForm
 class ChartView(TemplateView):
     template_name = 'pretixplugins/avgchart/chart.html'
 
+    def get_queryset(self, items, include_pending):
+        qs = OrderPosition.objects.filter(order__event=self.request.event)
+        allowed_states = ['p', 'n'] if include_pending else ['p']
+        qs = qs.filter(order__status__in=allowed_states)
+        if items:
+            qs = qs.filter(item__in=items)
+        return qs.order_by('order__datetime')
+
+    def get_start_date(self, items, include_pending):
+        return self.get_queryset(items, include_pending).first().order.datetime.date()
+
+    def get_end_date(self, items, include_pending):
+        return self.get_queryset(items, include_pending).last().order.datetime.date()
+
+    def get_date_range(self, start_date, end_date):
+        for offset in range((end_date - start_date).days + 1):
+            yield start_date + timedelta(days=offset)
 
 class SettingsView(EventSettingsFormView):
     form_class = AvgchartSettingsForm
