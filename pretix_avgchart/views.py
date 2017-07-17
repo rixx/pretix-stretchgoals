@@ -88,7 +88,7 @@ class AvgChartMixin:
 class ChartView(ChartContainingView, AvgChartMixin, TemplateView):
     template_name = 'pretixplugins/avgchart/chart.html'
 
-    def get_context_data(self, event, organizer):
+    def get_context_data(self, event=None, organizer=None):
         if 'refresh' in self.request.GET:
             self.request.event.get_cache().delete(self.get_cache_key())
         return super().get_context_data(event=event, organizer=organizer)
