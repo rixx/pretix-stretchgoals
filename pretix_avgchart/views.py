@@ -6,6 +6,7 @@ from django.db.models import Avg
 from django.db.models.query import QuerySet
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
+from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 from pretix.base.models import Item, OrderPosition
 from pretix.control.views import ChartContainingView
@@ -16,7 +17,12 @@ from pretix.presale.views import EventViewMixin
 from .forms import AvgchartSettingsForm
 
 
+@method_decorator(cache_page(3600), name='dispatch')
 class AvgChartMixin:
+
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get_queryset(self, items, include_pending):
         qs = OrderPosition.objects.filter(order__event=self.request.event)
         allowed_states = ['p', 'n'] if include_pending else ['p']
