@@ -44,7 +44,6 @@ class AvgchartSettingsForm(I18nForm, SettingsForm):
         widget=I18nTextarea
     )
 
-
     def __init__(self, *args, **kwargs):
         """ Reduce possible friends_ticket_items to items of this event. """
         self.event = kwargs.pop('event')

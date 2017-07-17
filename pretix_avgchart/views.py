@@ -11,7 +11,6 @@ from pretix.base.models import Item, OrderPosition
 from pretix.control.views import ChartContainingView
 from pretix.control.views.event import EventSettingsFormView
 from pretix.presale.utils import event_view
-from pretix.presale.views import EventViewMixin
 
 from .forms import AvgchartSettingsForm
 
