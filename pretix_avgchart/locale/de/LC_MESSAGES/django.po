@@ -1,0 +1,94 @@
+#: pretix_avgchart/forms.py:12
+msgid "Start date"
+msgstr ""
+
+#: pretix_avgchart/forms.py:13
+msgid "Will start at first sale otherwise."
+msgstr ""
+
+#: pretix_avgchart/forms.py:17
+msgid "End date"
+msgstr ""
+
+#: pretix_avgchart/forms.py:18
+msgid "Will end at last sale otherwise."
+msgstr ""
+
+#: pretix_avgchart/forms.py:22
+msgid "Show publicly"
+msgstr ""
+
+#: pretix_avgchart/forms.py:23
+msgid "By default, the chart is only shown in the backend."
+msgstr ""
+
+#: pretix_avgchart/forms.py:28
+msgid "Ticket types"
+msgstr ""
+
+#: pretix_avgchart/forms.py:29
+msgid "Tickets to be included in the calculation."
+msgstr ""
+
+#: pretix_avgchart/forms.py:33
+msgid "Include pending orders"
+msgstr ""
+
+#: pretix_avgchart/forms.py:34
+msgid "By default, only paid orders are included in the calculation."
+msgstr ""
+
+#: pretix_avgchart/forms.py:38
+msgid "Target value"
+msgstr ""
+
+#: pretix_avgchart/forms.py:39
+msgid "Do you need to reach a specific goal?"
+msgstr ""
+
+#: pretix_avgchart/forms.py:43
+msgid "Text shown on the public page"
+msgstr ""
+
+#: pretix_avgchart/signals.py:11
+msgid "Chart Averages"
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/chart.html:5
+#: pretix_avgchart/templates/pretixplugins/avgchart/chart.html:8
+#: pretix_avgchart/templates/pretixplugins/avgchart/chart.html:17
+msgid "Average ticket prices"
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/chart.html:9
+msgid "Settings"
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/chart.html:11
+msgid "Public"
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/public.html:12
+#: pretix_avgchart/templates/pretixplugins/avgchart/public.html:15
+msgid "Ticket Prices"
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/public.html:16
+msgid ""
+"This chart shows the average price paid for conference tickets over the "
+"whole presale period."
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/public.html:21
+#, python-format
+msgid "The green line shows the target of %(data.target)s  per ticket."
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/settings.html:4
+#: pretix_avgchart/templates/pretixplugins/avgchart/settings.html:6
+msgid "Average Price Chart Settings"
+msgstr ""
+
+#: pretix_avgchart/templates/pretixplugins/avgchart/settings.html:14
+msgid "Save"
+msgstr ""
