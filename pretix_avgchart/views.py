@@ -6,7 +6,6 @@ from django.db.models import Avg
 from django.db.models.query import QuerySet
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
-from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView
 from pretix.base.models import Item, OrderPosition
 from pretix.control.views import ChartContainingView
@@ -17,11 +16,7 @@ from pretix.presale.views import EventViewMixin
 from .forms import AvgchartSettingsForm
 
 
-@method_decorator(cache_page(3600), name='dispatch')
 class AvgChartMixin:
-
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
 
     def get_queryset(self, items, include_pending):
         qs = OrderPosition.objects.filter(order__event=self.request.event)
@@ -53,6 +48,14 @@ class AvgChartMixin:
 
     def get_context_data(self, organizer, event):
         ctx = super().get_context_data()
+        cache = self.request.event.get_cache()
+        cache_key = 'avgchart_data_{}'.format(self.request.event.slug)
+        chart_data = cache.get(cache_key)
+
+        if chart_data and not 'refresh' self.request.GET:
+            ctx['data'] = chart_data
+            return ctx
+
         self.request.event.settings._h.add_type(
             QuerySet,
             lambda queryset: ','.join([str(element.pk) for element in queryset]),
@@ -69,6 +72,8 @@ class AvgChartMixin:
             } for date in self.get_date_range(start_date, end_date)],
             'target': self.request.event.settings.avgchart_target_value
         }
+
+        cache.set(cache_key, chart_data, ex=3600)
         ctx['data'] = json.dumps(chart_data)
         return ctx
 
