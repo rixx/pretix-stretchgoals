@@ -1,0 +1,34 @@
+{% extends "pretixpresale/event/base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load staticfiles %}
+
+{% if request.event.avgchart_is_public %}
+
+    {% block custom_header %}
+        <link rel="stylesheet" href="{% static "charts/morris.css" %}" type="text/css" />
+    {% endblock %}
+
+    {% block title %}{% trans "Ticket Prices" %} :: {{ event.name }}{% endblock %}
+
+    {% block content %}
+        <h2>{% trans "Ticket Prices" %}</h2>
+        {% blocktrans trimmed %}
+        This chart shows the average price paid for conference tickets over the whole presale
+        period.
+        {% endblocktrans %}
+        {% if data.target %}
+            {% blocktrans trimmed with goal=data.target %}
+            The green line shows the target of {{ data.target }} € per ticket.
+            {% endblocktrans %}
+        {% endif %}
+        <div class="panel-body">
+            <div id="avg_chart" class="chart"></div>
+        </div>
+        <script type="application/json" id="avg-data">{{ data|safe }}</script>
+        <script type="text/javascript" src="{% static "charts/raphael-min.js" %}"></script>
+        <script type="text/javascript" src="{% static "charts/morris.js" %}"></script>
+        <script type="application/javascript" src="{% static "pretixplugins/avgchart/avgchart.js" %}"></script>
+    {% endblock %}
+
+{% endif %}
