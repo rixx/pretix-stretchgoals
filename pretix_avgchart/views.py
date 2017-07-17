@@ -55,7 +55,7 @@ class AvgChartMixin:
         cache_key = self.get_cache_key()
 
         try:
-            chart_data = json.loads(cache.get(cache_key))
+            chart_data = cache.get(cache_key)
         except:
             chart_data = None
 
@@ -72,16 +72,16 @@ class AvgChartMixin:
         items = self.request.event.settings.get('avgchart_items', as_type=QuerySet) or []
         start_date = self.request.event.settings.get('avgchart_start_date', as_type=date) or self.get_start_date(items, include_pending)
         end_date = self.request.event.settings.get('avgchart_end_date', as_type=date) or self.get_end_date(items, include_pending)
-        chart_data = {
+        chart_data = json.dumps({
             'data': [{
                 'date': date.strftime('%Y-%m-%d'),
                 'price': self.get_average_price(start_date, date, items, include_pending) or 0,
             } for date in self.get_date_range(start_date, end_date)],
             'target': self.request.event.settings.avgchart_target_value
-        }
+        })
 
-        cache.set(cache_key, json.dumps(chart_data), timeout=3600)
-        ctx['data'] = json.dumps(chart_data)
+        cache.set(cache_key, chart_data, timeout=3600)
+        ctx['data'] = chart_data
         return ctx
 
 
