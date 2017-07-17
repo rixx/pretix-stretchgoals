@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Avg
 from django.db.models.query import QuerySet
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.views.generic import TemplateView
 from pretix.base.models import Item, OrderPosition
 from pretix.control.views import ChartContainingView
@@ -28,7 +29,10 @@ class AvgChartMixin:
         return self.get_queryset(items, include_pending).first().order.datetime.date()
 
     def get_end_date(self, items, include_pending):
-        return self.get_queryset(items, include_pending).last().order.datetime.date()
+        last_date = self.get_queryset(items, include_pending).last().order.datetime.date()
+        if last_date == now().date():
+            last_date -= timedelta(days=1)
+        return last_date
 
     def get_date_range(self, start_date, end_date):
         for offset in range((end_date - start_date).days + 1):
