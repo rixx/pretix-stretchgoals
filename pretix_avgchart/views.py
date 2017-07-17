@@ -26,12 +26,20 @@ class AvgChartMixin:
         return qs.order_by('order__datetime')
 
     def get_start_date(self, items, include_pending):
-        return self.get_queryset(items, include_pending).first().order.datetime.date()
+        first_order = self.get_queryset(items, include_pending).first()
+        if first_order:
+            return first_order.order.datetime.date()
+        else:
+            return (now() - timedelta(days=2)).date()
 
     def get_end_date(self, items, include_pending):
-        last_date = self.get_queryset(items, include_pending).last().order.datetime.date()
-        if last_date == now().date():
-            last_date -= timedelta(days=1)
+        last_order = self.get_queryset(items, include_pending).last()
+        if last_order:
+            last_date = last_order.order.datetime.date()
+            if last_date == now().date():
+                last_date -= timedelta(days=1)
+        else:
+            last_date = (now() - timedelta(days=1)).date()
         return last_date
 
     def get_date_range(self, start_date, end_date):
@@ -48,7 +56,7 @@ class AvgChartMixin:
     def get_cache_key(self):
         return 'avgchart_data_{}'.format(self.request.event.slug)
 
-    def get_context_data(self, organizer, event):
+    def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data()
         cache = self.request.event.get_cache()
         cache_key = self.get_cache_key()
