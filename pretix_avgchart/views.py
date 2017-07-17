@@ -46,13 +46,16 @@ class AvgChartMixin:
         )
         return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
 
+    def get_cache_key(self):
+        return 'avgchart_data_{}'.format(self.request.event.slug)
+
     def get_context_data(self, organizer, event):
         ctx = super().get_context_data()
         cache = self.request.event.get_cache()
-        cache_key = 'avgchart_data_{}'.format(self.request.event.slug)
+        cache_key = self.get_cache_key()
         chart_data = cache.get(cache_key)
 
-        if chart_data and not 'refresh' self.request.GET:
+        if chart_data:
             ctx['data'] = chart_data
             return ctx
 
@@ -80,6 +83,11 @@ class AvgChartMixin:
 
 class ChartView(ChartContainingView, AvgChartMixin, TemplateView):
     template_name = 'pretixplugins/avgchart/chart.html'
+
+    def get_context_data(self, *args, **kwargs):
+        if 'refresh' in self.request.GET:
+            self.request.event.get_cache().delete(self.get_cache_key())
+        return super().get_context_data(self, *args, **kwargs)
 
 
 @method_decorator(event_view, name='dispatch')
