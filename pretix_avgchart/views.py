@@ -4,17 +4,18 @@ import json
 from django.core.urlresolvers import reverse
 from django.db.models import Avg
 from django.db.models.query import QuerySet
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from pretix.base.models import Item, OrderPosition
 from pretix.control.views import ChartContainingView
 from pretix.control.views.event import EventSettingsFormView
+from pretix.presale.utils import event_view
+from pretix.presale.views import EventViewMixin
 
 from .forms import AvgchartSettingsForm
 
 
-class ChartView(ChartContainingView, TemplateView):
-    template_name = 'pretixplugins/avgchart/chart.html'
-
+class AvgChartMixin:
     def get_queryset(self, items, include_pending):
         qs = OrderPosition.objects.filter(order__event=self.request.event)
         allowed_states = ['p', 'n'] if include_pending else ['p']
@@ -60,6 +61,15 @@ class ChartView(ChartContainingView, TemplateView):
         }
         ctx['data'] = json.dumps(chart_data)
         return ctx
+
+
+class ChartView(ChartContainingView, AvgChartMixin, TemplateView):
+    template_name = 'pretixplugins/avgchart/chart.html'
+
+
+@method_decorator(event_view, name='dispatch')
+class PublicView(ChartContainingView, AvgChartMixin, TemplateView):
+    template_name = 'pretixplugins/avgchart/public.html'
 
 
 class SettingsView(EventSettingsFormView):

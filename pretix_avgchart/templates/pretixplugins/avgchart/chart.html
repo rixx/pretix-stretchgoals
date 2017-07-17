@@ -7,6 +7,9 @@
     <h1>
         {% trans "Average ticket prices" %}
         <small><a href="{% url "plugins:pretix_avgchart:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a></small>
+        {% if request.event.settings.avgchart_is_public %}
+            <small> · <a href="{% url "plugins:pretix_avgchart:public" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Public" %}</a></small>
+        {% endif %}
     </h1>
 
     <div class="panel panel-default">
