@@ -39,7 +39,7 @@ class AvgChartMixin:
             order__datetime__date__gte=start_date,
             order__datetime__date__lte=end_date
         )
-        return qs.aggregate(Avg('price')).get('price__avg', 0)
+        return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
 
     def get_context_data(self, organizer, event):
         ctx = super().get_context_data()
