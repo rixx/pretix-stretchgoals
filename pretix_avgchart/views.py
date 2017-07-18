@@ -7,6 +7,7 @@ from django.db.models.query import QuerySet
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.generic import TemplateView
+from i18nfield.strings import LazyI18nString
 from pretix.base.models import Item, OrderPosition
 from pretix.control.views import ChartContainingView
 from pretix.control.views.event import EventSettingsFormView
@@ -58,6 +59,7 @@ class AvgChartMixin:
 
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data()
+        ctx['public_text'] = str(self.request.event.settings.get('avgchart_public_text', as_type=LazyI18nString))
         cache = self.request.event.get_cache()
         cache_key = self.get_cache_key()
 

@@ -1,6 +1,7 @@
 {% extends "pretixpresale/event/base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load rich_text %}
 {% load staticfiles %}
 
 {% if request.event.avgchart_is_public %}
@@ -22,6 +23,7 @@
             The green line shows the target of {{ data.target }} € per ticket.
             {% endblocktrans %}
         {% endif %}
+        {{ public_text|rich_text }}
         <div class="panel-body">
             <div id="avg_chart" class="chart"></div>
         </div>
