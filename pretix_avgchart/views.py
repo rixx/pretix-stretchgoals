@@ -1,8 +1,9 @@
 from datetime import date, timedelta
+import decimal
 import json
 
 from django.core.urlresolvers import reverse
-from django.db.models import Avg
+from django.db.models import Avg, Sum
 from django.db.models.query import QuerySet
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
@@ -59,6 +60,27 @@ class AvgChartMixin:
             order__datetime__date__lte=end_date
         )
         return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
+
+    def get_required_average_price(self, items, include_pending, target):
+        if not target:
+            return
+        all_orders = self.get_queryset(items, include_pending).filter(
+            order__datetime__gte=self.get_start_date(items, include_pending),
+            order__datetime__lte=self.get_end_date(items, include_pending)
+        )
+        current_count = all_orders.count()
+        total_count = int(self.request.event.settings.get('avgchart_items_to_be_sold'), 0)
+
+        current_total = all_orders.aggregate(Sum('price')).get('price__sum') or 0
+        goal_total = total_count * target
+
+        if current_total > goal_total:
+            return 0
+
+        try:
+            return round((goal_total - current_total) / (total_count - current_count), 2)
+        except:
+            return None
 
     def get_cache_key(self):
         return 'avgchart_data_{}'.format(self.request.event.slug)
