@@ -27,6 +27,9 @@ class AvgChartMixin:
         return qs.order_by('order__datetime')
 
     def get_start_date(self, items, include_pending):
+        start_date = self.request.event.settings.get('avgchart_start_date', as_type=date)
+        if start_date:
+            return start_date
         first_order = self.get_queryset(items, include_pending).first()
         if first_order:
             return first_order.order.datetime.date()
@@ -34,6 +37,9 @@ class AvgChartMixin:
             return (now() - timedelta(days=2)).date()
 
     def get_end_date(self, items, include_pending):
+        end_date = self.request.event.settings.get('avgchart_end_date', as_type=date)
+        if end_date:
+            return end_date
         last_order = self.get_queryset(items, include_pending).last()
         if last_order:
             last_date = last_order.order.datetime.date()
@@ -79,15 +85,17 @@ class AvgChartMixin:
         )
         include_pending = self.request.event.settings.avgchart_include_pending or False
         items = self.request.event.settings.get('avgchart_items', as_type=QuerySet) or []
-        start_date = self.request.event.settings.get('avgchart_start_date', as_type=date) or self.get_start_date(items, include_pending)
-        end_date = self.request.event.settings.get('avgchart_end_date', as_type=date) or self.get_end_date(items, include_pending)
-        chart_data = json.dumps({
+        start_date = self.get_start_date(items, include_pending)
+        end_date = self.get_end_date(items, include_pending)
+        target_value = decimal.Decimal(self.request.event.settings.avgchart_target_value) or 0
+        data = {
             'data': [{
                 'date': date.strftime('%Y-%m-%d'),
                 'price': self.get_average_price(start_date, date, items, include_pending) or 0,
             } for date in self.get_date_range(start_date, end_date)],
-            'target': self.request.event.settings.avgchart_target_value
-        })
+            'target': float(target_value),
+        }
+        chart_data = json.dumps(data)
 
         cache.set(cache_key, chart_data, timeout=3600)
         ctx['data'] = chart_data
