@@ -121,6 +121,11 @@ class AvgChartMixin:
 
         cache.set(cache_key, chart_data, timeout=3600)
         ctx['data'] = chart_data
+        ctx['public_text'] = ctx['public_text'].format(**{
+            'target': target_value,
+            'avg_now': data['data'][-1]['price'] if data['data'] else None,
+            'avg_required': self.get_required_average_price(items, include_pending, target_value)
+        })
         return ctx
 
 
