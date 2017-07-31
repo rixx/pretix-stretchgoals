@@ -28,6 +28,12 @@ class AvgchartSettingsForm(I18nForm, SettingsForm):
         label=_('Ticket types'),
         help_text=_('Tickets to be included in the calculation.'),
     )
+    avgchart_items_to_be_sold = forms.IntegerField(
+        required=False,
+        label=_('Total amount of tickets'),
+        help_text=_('The total amount of tickets you expect to sell. Used to calculate the required '
+                    'remaining average price required to meet the target.'),
+    )
     avgchart_include_pending = forms.BooleanField(
         required=False,
         label=_('Include pending orders'),
