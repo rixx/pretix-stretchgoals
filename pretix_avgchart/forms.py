@@ -48,7 +48,15 @@ class AvgchartSettingsForm(I18nForm, SettingsForm):
         """ Reduce possible friends_ticket_items to items of this event. """
         self.event = kwargs.pop('event')
         super().__init__(*args, **kwargs)
+
+        avg_initial = self.event.settings.get('avgchart_items', as_type=QuerySet) or []
+        if isinstance(avg_initial, str) and avg_initial:
+            avg_initial = self.event.items.filter(id__in=avg_initial.split(','))
+        elif isinstance(avg_initial, list):
+            avg_initial = self.event.items.filter(id__in=[i.pk for i in avg_initial])
+
         self.fields['avgchart_items'].queryset = Item.objects.filter(event=self.event)
+        self.initial['avgchart_items'] = avg_initial
 
     def save(self, *args, **kwargs):
         self.event.settings._h.add_type(
