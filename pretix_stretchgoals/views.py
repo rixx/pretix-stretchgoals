@@ -69,7 +69,7 @@ class AvgChartMixin:
             order__datetime__lte=self.get_end_date(items, include_pending)
         )
         current_count = all_orders.count()
-        total_count = int(self.request.event.settings.get('stretchgoals_items_to_be_sold'), 0)
+        total_count = int(self.request.event.settings.get('stretchgoals_items_to_be_sold') or 0)
 
         current_total = all_orders.aggregate(Sum('price')).get('price__sum') or 0
         goal_total = total_count * target
@@ -109,7 +109,7 @@ class AvgChartMixin:
         items = self.request.event.settings.get('stretchgoals_items', as_type=QuerySet) or []
         start_date = self.get_start_date(items, include_pending)
         end_date = self.get_end_date(items, include_pending)
-        target_value = decimal.Decimal(self.request.event.settings.stretchgoals_target_value) or 0
+        target_value = decimal.Decimal(self.request.event.settings.stretchgoals_target_value or 0)
         data = {
             'data': [{
                 'date': date.strftime('%Y-%m-%d'),
