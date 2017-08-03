@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class PluginApp(AppConfig):
-    name = 'pretix_avgchart'
+    name = 'pretix_stretchgoals'
     verbose_name = 'A pretix plugin to chart average prices over time'
 
     class PretixPluginMeta:
@@ -16,4 +16,4 @@ class PluginApp(AppConfig):
         from . import signals  # NOQA
 
 
-default_app_config = 'pretix_avgchart.PluginApp'
+default_app_config = 'pretix_stretchgoals.PluginApp'

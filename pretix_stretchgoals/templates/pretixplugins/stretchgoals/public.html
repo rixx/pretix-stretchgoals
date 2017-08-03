@@ -4,7 +4,7 @@
 {% load rich_text %}
 {% load staticfiles %}
 
-{% if request.event.avgchart_is_public %}
+{% if request.event.stretchgoals_is_public %}
 
     {% block custom_header %}
         <link rel="stylesheet" href="{% static "charts/morris.css" %}" type="text/css" />
@@ -30,7 +30,7 @@
         <script type="application/json" id="avg-data">{{ data|safe }}</script>
         <script type="text/javascript" src="{% static "charts/raphael-min.js" %}"></script>
         <script type="text/javascript" src="{% static "charts/morris.js" %}"></script>
-        <script type="application/javascript" src="{% static "pretixplugins/avgchart/avgchart.js" %}"></script>
+        <script type="application/javascript" src="{% static "pretixplugins/stretchgoals/avgchart.js" %}"></script>
     {% endblock %}
 
 {% endif %}

@@ -24,11 +24,11 @@ cmdclass = {
 
 
 setup(
-    name='pretix-avgchart',
+    name='pretix-stretchgoals',
     version='1.0.0',
     description='Chart the average price of tickets sold over time, and optionally display them publicly.',
     long_description=long_description,
-    url='https://github.com/rixx/pretix-avgchart',
+    url='https://github.com/rixx/pretix-stretchgoals',
     author='Tobias Kunze',
     author_email='rixx@cutebit.de',
     license='Apache Software License',
@@ -39,6 +39,6 @@ setup(
     cmdclass=cmdclass,
     entry_points="""
 [pretix.plugin]
-pretix_avgchart=pretix_avgchart:PretixPluginMeta
+pretix_stretchgoals=pretix_stretchgoals:PretixPluginMeta
 """,
 )

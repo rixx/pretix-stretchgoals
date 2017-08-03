@@ -1,3 +1,3 @@
-recursive-include pretix_avgchart/static *
-recursive-include pretix_avgchart/templates *
-recursive-include pretix_avgchart/locale *
+recursive-include pretix_stretchgoals/static *
+recursive-include pretix_stretchgoals/templates *
+recursive-include pretix_stretchgoals/locale *

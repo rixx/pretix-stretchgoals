@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-04 00:35+0200\n"
+"PO-Revision-Date: 2017-08-04 00:37+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.3\n"
+
+#: pretix_stretchgoals/forms.py:12
+msgid "Start date"
+msgstr "Startdatum"
+
+#: pretix_stretchgoals/forms.py:13
+msgid "Will start at first sale otherwise."
+msgstr "Startet andernfalls beim ersten Verkauf."
+
+#: pretix_stretchgoals/forms.py:17
+msgid "End date"
+msgstr "Enddatum"
+
+#: pretix_stretchgoals/forms.py:18
+msgid "Will end at last sale otherwise."
+msgstr "Endet andernfalls beim letzten Verkauf."
+
+#: pretix_stretchgoals/forms.py:22
+msgid "Show publicly"
+msgstr "Öffentlich anzeigen"
+
+#: pretix_stretchgoals/forms.py:23
+msgid "By default, the chart is only shown in the backend."
+msgstr "Normalerweise nur hier zugänglich."
+
+#: pretix_stretchgoals/forms.py:28
+msgid "Ticket types"
+msgstr "Ticketarten"
+
+#: pretix_stretchgoals/forms.py:29
+msgid "Tickets to be included in the calculation."
+msgstr "Tickets, die in die Berechnung eingehen sollen."
+
+#: pretix_stretchgoals/forms.py:33
+msgid "Total amount of tickets"
+msgstr "Gesamtbetrag"
+
+#: pretix_stretchgoals/forms.py:34
+msgid ""
+"The total amount of tickets you expect to sell. Used to calculate the "
+"required remaining average price required to meet the target."
+msgstr ""
+
+#: pretix_stretchgoals/forms.py:39
+msgid "Include pending orders"
+msgstr "Ausstehende Bestellungen einrechnen"
+
+#: pretix_stretchgoals/forms.py:40
+msgid "By default, only paid orders are included in the calculation."
+msgstr "Normalerweise werden nur bezahlte Bestellungen eingerechnet."
+
+#: pretix_stretchgoals/forms.py:44
+msgid "Target value"
+msgstr "Zielwert"
+
+#: pretix_stretchgoals/forms.py:45
+msgid "Do you need to reach a specific goal?"
+msgstr "Soll ein bestimmter Wert erreicht werden?"
+
+#: pretix_stretchgoals/forms.py:49
+#, python-brace-format
+msgid ""
+"Text shown on the public page. You can use the placeholders {target} (the "
+"target average), {avg_now} (the current average), and {avg_required} (the "
+"average still required to reach the goal)."
+msgstr ""
+
+#: pretix_stretchgoals/signals.py:11
+msgid "Chart Averages"
+msgstr "Durchschnittsgraph"
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/chart.html:5
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/chart.html:8
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/chart.html:17
+msgid "Average ticket prices"
+msgstr "Durchschnittlicher Ticketpreis"
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/chart.html:9
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/chart.html:11
+msgid "Public"
+msgstr "Öffentliche Seite"
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/public.html:13
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/public.html:16
+msgid "Ticket Prices"
+msgstr "Ticketpreise"
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/public.html:17
+msgid ""
+"This chart shows the average price paid for conference tickets over the "
+"whole presale period."
+msgstr ""
+"Dieser Graph zeigt den durchschnittlich bezahlten Ticketpreis für diese "
+"Veranstaltung."
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/public.html:22
+#, python-format
+msgid "The green line shows the target of %(data.target)s € per ticket."
+msgstr "Die grüne Linie zeigt das Ziel von %(data.target)s € pro Ticket."
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/settings.html:4
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/settings.html:6
+msgid "Average Price Chart Settings"
+msgstr "Einstellungen für den Durchschnittsgraphen"
+
+#: pretix_stretchgoals/templates/pretixplugins/stretchgoals/settings.html:14
+msgid "Save"
+msgstr "Speichern"

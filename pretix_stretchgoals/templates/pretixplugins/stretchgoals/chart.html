@@ -6,9 +6,9 @@
 {% block content %}
     <h1>
         {% trans "Average ticket prices" %}
-        <small><a href="{% url "plugins:pretix_avgchart:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a></small>
-        {% if request.event.settings.avgchart_is_public %}
-            <small> · <a href="{% url "plugins:pretix_avgchart:public" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Public" %}</a></small>
+        <small><a href="{% url "plugins:pretix_stretchgoals:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a></small>
+        {% if request.event.settings.stretchgoals_is_public %}
+            <small> · <a href="{% url "plugins:pretix_stretchgoals:public" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Public" %}</a></small>
         {% endif %}
     </h1>
 
@@ -22,5 +22,5 @@
     </div>
 
     <script type="application/json" id="avg-data">{{ data|safe }}</script>
-    <script type="application/javascript" src="{% static "pretixplugins/avgchart/avgchart.js" %}"></script>
+    <script type="application/javascript" src="{% static "pretixplugins/stretchgoals/avgchart.js" %}"></script>
 {% endblock %}

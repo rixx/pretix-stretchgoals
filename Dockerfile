@@ -2,9 +2,9 @@ FROM pretix/standalone
 
 USER root
 
-ADD . /pretix/pretix_avgchart
+ADD . /pretix/pretix_stretchgoals
 
-WORKDIR /pretix/pretix_avgchart
+WORKDIR /pretix/pretix_stretchgoals
 RUN python3 setup.py develop
 
 WORKDIR /pretix/src

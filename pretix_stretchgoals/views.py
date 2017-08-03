@@ -14,7 +14,7 @@ from pretix.control.views import ChartContainingView
 from pretix.control.views.event import EventSettingsFormView
 from pretix.presale.utils import event_view
 
-from .forms import AvgchartSettingsForm
+from .forms import StretchgoalsSettingsForm
 
 
 class AvgChartMixin:
@@ -28,7 +28,7 @@ class AvgChartMixin:
         return qs.order_by('order__datetime')
 
     def get_start_date(self, items, include_pending):
-        start_date = self.request.event.settings.get('avgchart_start_date', as_type=date)
+        start_date = self.request.event.settings.get('stretchgoals_start_date', as_type=date)
         if start_date:
             return start_date
         first_order = self.get_queryset(items, include_pending).first()
@@ -38,7 +38,7 @@ class AvgChartMixin:
             return (now() - timedelta(days=2)).date()
 
     def get_end_date(self, items, include_pending):
-        end_date = self.request.event.settings.get('avgchart_end_date', as_type=date)
+        end_date = self.request.event.settings.get('stretchgoals_end_date', as_type=date)
         if end_date:
             return end_date
         last_order = self.get_queryset(items, include_pending).last()
@@ -69,7 +69,7 @@ class AvgChartMixin:
             order__datetime__lte=self.get_end_date(items, include_pending)
         )
         current_count = all_orders.count()
-        total_count = int(self.request.event.settings.get('avgchart_items_to_be_sold'), 0)
+        total_count = int(self.request.event.settings.get('stretchgoals_items_to_be_sold'), 0)
 
         current_total = all_orders.aggregate(Sum('price')).get('price__sum') or 0
         goal_total = total_count * target
@@ -83,11 +83,11 @@ class AvgChartMixin:
             return None
 
     def get_cache_key(self):
-        return 'avgchart_data_{}'.format(self.request.event.slug)
+        return 'stretchgoals_data_{}'.format(self.request.event.slug)
 
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data()
-        ctx['public_text'] = str(self.request.event.settings.get('avgchart_public_text', as_type=LazyI18nString))
+        ctx['public_text'] = str(self.request.event.settings.get('stretchgoals_public_text', as_type=LazyI18nString))
         cache = self.request.event.get_cache()
         cache_key = self.get_cache_key()
 
@@ -105,11 +105,11 @@ class AvgChartMixin:
             lambda queryset: ','.join([str(element.pk) for element in queryset]),
             lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',') if element]
         )
-        include_pending = self.request.event.settings.avgchart_include_pending or False
-        items = self.request.event.settings.get('avgchart_items', as_type=QuerySet) or []
+        include_pending = self.request.event.settings.stretchgoals_include_pending or False
+        items = self.request.event.settings.get('stretchgoals_items', as_type=QuerySet) or []
         start_date = self.get_start_date(items, include_pending)
         end_date = self.get_end_date(items, include_pending)
-        target_value = decimal.Decimal(self.request.event.settings.avgchart_target_value) or 0
+        target_value = decimal.Decimal(self.request.event.settings.stretchgoals_target_value) or 0
         data = {
             'data': [{
                 'date': date.strftime('%Y-%m-%d'),
@@ -130,7 +130,7 @@ class AvgChartMixin:
 
 
 class ChartView(ChartContainingView, AvgChartMixin, TemplateView):
-    template_name = 'pretixplugins/avgchart/chart.html'
+    template_name = 'pretixplugins/stretchgoals/chart.html'
 
     def get_context_data(self, event=None, organizer=None):
         if 'refresh' in self.request.GET:
@@ -140,12 +140,12 @@ class ChartView(ChartContainingView, AvgChartMixin, TemplateView):
 
 @method_decorator(event_view, name='dispatch')
 class PublicView(ChartContainingView, AvgChartMixin, TemplateView):
-    template_name = 'pretixplugins/avgchart/public.html'
+    template_name = 'pretixplugins/stretchgoals/public.html'
 
 
 class SettingsView(EventSettingsFormView):
-    form_class = AvgchartSettingsForm
-    template_name = 'pretixplugins/avgchart/settings.html'
+    form_class = StretchgoalsSettingsForm
+    template_name = 'pretixplugins/stretchgoals/settings.html'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -153,7 +153,7 @@ class SettingsView(EventSettingsFormView):
         return kwargs
 
     def get_success_url(self, **kwargs):
-        return reverse('plugins:pretix_avgchart:settings', kwargs={
+        return reverse('plugins:pretix_stretchgoals:settings', kwargs={
             'organizer': self.request.event.organizer.slug,
             'event': self.request.event.slug,
         })
