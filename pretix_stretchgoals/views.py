@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from django.core.urlresolvers import reverse
 from django.db.models import Avg, Sum
 from django.db.models.query import QuerySet
+from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.generic import TemplateView
@@ -15,6 +16,7 @@ from pretix.control.views.event import EventSettingsFormView
 from pretix.presale.utils import event_view
 
 from .forms import StretchgoalsSettingsForm
+from .utils import get_goals, set_goals
 
 
 class AvgChartMixin:
@@ -146,6 +148,15 @@ class PublicView(ChartContainingView, AvgChartMixin, TemplateView):
 class SettingsView(EventSettingsFormView):
     form_class = StretchgoalsSettingsForm
     template_name = 'pretixplugins/stretchgoals/settings.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'delete' in request.GET:
+            goals = get_goals(request.event)
+            index = int(request.GET.get('delete', 1)) - 1
+            goals.pop(index)
+            set_goals(request.event, goals)
+            return redirect(self.get_success_url())
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
