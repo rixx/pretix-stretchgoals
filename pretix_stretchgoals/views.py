@@ -129,8 +129,8 @@ class AvgChartMixin:
         return ctx
 
 
-class ChartView(ChartContainingView, AvgChartMixin, TemplateView):
-    template_name = 'pretixplugins/stretchgoals/chart.html'
+class ControlView(ChartContainingView, AvgChartMixin, TemplateView):
+    template_name = 'pretixplugins/stretchgoals/control.html'
 
     def get_context_data(self, event=None, organizer=None):
         if 'refresh' in self.request.GET:

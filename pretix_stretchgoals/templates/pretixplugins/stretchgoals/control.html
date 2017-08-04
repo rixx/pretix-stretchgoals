@@ -1,0 +1,20 @@
+{% extends "pretixcontrol/items/base.html" %}
+
+{% load bootstrap3 %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %} {% trans "Stretch Goals" %} {% endblock %}
+
+{% block content %}
+    <h1>
+        {% trans "Define Stretch Goals" %}
+        <small><a href="{% url "plugins:pretix_stretchgoals:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a></small>
+
+        {% if request.event.settings.stretchgoals_is_public %}
+            <small> · <a href="{% url "plugins:pretix_stretchgoals:public" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Public" %}</a></small>
+        {% endif %}
+    </h1>
+
+    {% include "pretixplugins/stretchgoals/chart.html" %}
+{% endblock %}

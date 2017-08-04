@@ -10,7 +10,7 @@ def navbar_info(sender, request, **kwargs):
     return [{
         'label': _('Stretch Goals'),
         'icon': 'bullseye',
-        'url': reverse('plugins:pretix_stretchgoals:chart', kwargs={
+        'url': reverse('plugins:pretix_stretchgoals:control', kwargs={
             'event': request.event.slug,
             'organizer': request.organizer.slug,
         }),

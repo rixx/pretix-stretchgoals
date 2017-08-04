@@ -1,10 +1,10 @@
 from django.conf.urls import url
 
-from .views import ChartView, PublicView, SettingsView
+from .views import ControlView, PublicView, SettingsView
 
 urlpatterns = [
     url(r'^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/stretchgoals/settings/', SettingsView.as_view(), name='settings'),
-    url(r'^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/stretchgoals/', ChartView.as_view(), name='chart'),
+    url(r'^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/stretchgoals/', ControlView.as_view(), name='control'),
 ]
 
 event_patterns = [
