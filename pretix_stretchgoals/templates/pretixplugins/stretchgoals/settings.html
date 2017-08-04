@@ -1,18 +1,42 @@
 {% extends "pretixcontrol/event/base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block title %} {% trans "Average Price Chart Settings" %} {% endblock %}
+
+{% block title %} {% trans "Stretch Goal Settings" %} {% endblock %}
+
 {% block content %}
-    <h1>{% trans "Average Price Chart Settings" %}</h1>
+    <h1>
+        {% trans "Stretch Goal Settings" %}
+        <small><a href="{% url "plugins:pretix_stretchgoals:control" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Back" %}</a></small>
+    </h1>
+
     <form action="" method="post" class="form-horizontal">
         {% csrf_token %}
-        <div class="panel-body">
-            {% bootstrap_form form %}
-        </div>
-        <div class="form-group btn-group col-md-12">
+        {% bootstrap_form_errors form %}
+
+        <legend>{% trans "General settings" %}</legend>
+            <fieldset>
+                {% bootstrap_field form.stretchgoals_start_date layout="horizontal" %}
+                {% bootstrap_field form.stretchgoals_end_date layout="horizontal" %}
+                {% bootstrap_field form.stretchgoals_items layout="horizontal" %}
+                {% bootstrap_field form.stretchgoals_include_pending layout="horizontal" %}
+            </fieldset>
+
+        <legend>{% trans "Goals" %}</legend>
+            <fieldset>
+            </fieldset>
+
+        <legend>{% trans "Display" %}</legend>
+            <fieldset>
+                {% bootstrap_field form.stretchgoals_is_public layout="horizontal" %}
+                {% bootstrap_field form.stretchgoals_public_text layout="horizontal" %}
+            </fieldset>
+
+        <div class="form-group submit-group">
             <button type="submit" class="btn btn-primary btn-save">
                 {% trans "Save" %}
             </button>
         </div>
     </form>
+
 {% endblock %}
