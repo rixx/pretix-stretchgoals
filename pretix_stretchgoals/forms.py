@@ -65,10 +65,15 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         label=_('Show publicly'),
         help_text=_('By default, the chart is only shown in the backend.')
     )
-    stretchgoal_chart_averages = forms.BooleanField(
+    stretchgoals_chart_averages = forms.BooleanField(
         required=False,
-        label=_('Show average price on chart'),
-        help_text=_('By default, the chart is plotting total revenue.')
+        label=_('Generate average price graph'),
+        help_text=_('This graph shows the development of the average price paid.')
+    )
+    stretchgoals_chart_totals = forms.BooleanField(
+        required=False,
+        label=_('Generate total revenue graph'),
+        help_text=_('This graph shows the total revenue over time.')
     )
     stretchgoals_public_text = I18nFormField(
         required=False,
