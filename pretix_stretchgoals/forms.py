@@ -1,7 +1,9 @@
+import json
+
 from django import forms
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
-from i18nfield.forms import I18nForm, I18nFormField, I18nTextarea
+from i18nfield.forms import I18nForm, I18nFormField, I18nTextarea, I18nTextInput
 from pretix.base.forms import SettingsForm
 from pretix.base.models import Item
 
@@ -31,6 +33,28 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         help_text=_('By default, only paid orders are included in the calculation.')
     )
 
+    # Goal settings
+    stretchgoals_new_name = I18nFormField(
+        required=False,
+        label=_('New goal\'s name'),
+        widget=I18nTextInput
+    )
+    stretchgoals_new_total = forms.IntegerField(
+        required=False,
+        min_value=0,
+        label=_('New goal')
+    )
+    stretchgoals_new_amount = forms.IntegerField(
+        required=False,
+        min_value=0,
+        label=_('New goal\'s amount of items to be sold')
+    )
+    stretchgoals_new_description = I18nFormField(
+        required=False,
+        label=_('New goal\'s description'),
+        widget=I18nTextarea
+    )
+
     # Display settings
     stretchgoals_is_public = forms.BooleanField(
         required=False,
@@ -46,7 +70,7 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         required=False,
         label=_('Text shown on the public page.'),
         help_text=_('Text shown on the public page. You can use the placeholders {target} (the target average), '
-                '{avg_now} (the current average), and {avg_required} (the average still required to reach the goal).'),
+                    '{avg_now} (the current average), and {avg_required} (the average still required to reach the goal).'),
         widget=I18nTextarea
     )
 
