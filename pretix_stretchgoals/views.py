@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from django.core.urlresolvers import reverse
 from django.db.models import Avg, Sum
 from django.db.models.query import QuerySet
+from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
@@ -144,6 +145,11 @@ class ControlView(ChartContainingView, AvgChartMixin, TemplateView):
 @method_decorator(event_view, name='dispatch')
 class PublicView(ChartContainingView, AvgChartMixin, TemplateView):
     template_name = 'pretixplugins/stretchgoals/public.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.event.settings.stretchgoals_is_public:
+            raise Http404()
+        return super().dispatch(request, *args, **kwargs)
 
 
 class SettingsView(EventSettingsFormView):
