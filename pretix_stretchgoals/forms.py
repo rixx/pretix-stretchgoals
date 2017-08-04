@@ -3,9 +3,13 @@ import json
 from django import forms
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
-from i18nfield.forms import I18nForm, I18nFormField, I18nTextarea, I18nTextInput
+from i18nfield.forms import (
+    I18nForm, I18nFormField, I18nTextarea, I18nTextInput,
+)
 from pretix.base.forms import SettingsForm
 from pretix.base.models import Item
+
+from .utils import get_goals, set_goals
 
 
 class StretchgoalsSettingsForm(I18nForm, SettingsForm):
@@ -79,16 +83,30 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         self.event = kwargs.pop('event')
         super().__init__(*args, **kwargs)
 
-        avg_initial = self.event.settings.get('stretchgoals_items', as_type=QuerySet) or []
-        if isinstance(avg_initial, str) and avg_initial:
-            avg_initial = self.event.items.filter(id__in=avg_initial.split(','))
-        elif isinstance(avg_initial, list):
-            avg_initial = self.event.items.filter(id__in=[i.pk for i in avg_initial])
+        initial_items = self.event.settings.get('stretchgoals_items', as_type=QuerySet) or []
+        if isinstance(initial_items, str) and initial_items:
+            initial_items = self.event.items.filter(id__in=initial_items.split(','))
+        elif isinstance(initial_items, list):
+            initial_items = self.event.items.filter(id__in=[i.pk for i in initial_items])
 
         self.fields['stretchgoals_items'].queryset = Item.objects.filter(event=self.event)
-        self.initial['stretchgoals_items'] = avg_initial
+        self.initial['stretchgoals_items'] = initial_items
+        self.goals = get_goals(self.event)
+
+    def _save_new_goal(self):
+        goals = json.loads(self.event.settings.get('stretchgoals_goals') or "[]")
+        new_goal = dict()
+        for item in ['name', 'total', 'amount', 'description']:
+            new_goal[item] = self.cleaned_data.pop('stretchgoals_new_{}'.format(item))
+            self.fields.pop('stretchgoals_new_{}'.format(item))
+
+        if new_goal['total']:
+            goals.append(new_goal)
+            goals = sorted(goals, key=lambda x: x['total'])
+            set_goals(self.event, goals)
 
     def save(self, *args, **kwargs):
+        self._save_new_goal()
         self.event.settings._h.add_type(
             QuerySet,
             lambda queryset: ','.join([str(element.pk) for element in queryset]),
