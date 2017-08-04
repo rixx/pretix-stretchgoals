@@ -8,8 +8,8 @@ from pretix.control.signals import nav_event
 def navbar_info(sender, request, **kwargs):
     url = resolve(request.path_info)
     return [{
-        'label': _('Chart Averages'),
-        'icon': 'line-chart',
+        'label': _('Stretch Goals'),
+        'icon': 'bullseye',
         'url': reverse('plugins:pretix_stretchgoals:chart', kwargs={
             'event': request.event.slug,
             'organizer': request.organizer.slug,
