@@ -7,6 +7,7 @@ from pretix.base.models import Item
 
 
 class StretchgoalsSettingsForm(I18nForm, SettingsForm):
+    # General settings
     stretchgoals_start_date = forms.DateField(
         required=False,
         label=_('Start date'),
@@ -24,30 +25,27 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         help_text=_('Items to be included in the calculation.'),
         widget=forms.CheckboxSelectMultiple,
     )
-    stretchgoals_items_to_be_sold = forms.IntegerField(
-        required=False,
-        label=_('Total amount of tickets'),
-        help_text=_('The total amount of tickets you expect to sell. Used to calculate the required '
-                    'remaining average price required to meet the target.'),
-    )
     stretchgoals_include_pending = forms.BooleanField(
         required=False,
         label=_('Include pending orders'),
         help_text=_('By default, only paid orders are included in the calculation.')
     )
-    stretchgoals_target_value = forms.DecimalField(
-        required=False,
-        label=_('Target value'),
-        help_text=_('Do you need to reach a specific goal?')
-    )
+
+    # Display settings
     stretchgoals_is_public = forms.BooleanField(
         required=False,
         label=_('Show publicly'),
         help_text=_('By default, the chart is only shown in the backend.')
     )
+    stretchgoal_chart_averages = forms.BooleanField(
+        required=False,
+        label=_('Show average price on chart'),
+        help_text=_('By default, the chart is plotting total revenue.')
+    )
     stretchgoals_public_text = I18nFormField(
         required=False,
-        label=_('Text shown on the public page. You can use the placeholders {target} (the target average), '
+        label=_('Text shown on the public page.'),
+        help_text=_('Text shown on the public page. You can use the placeholders {target} (the target average), '
                 '{avg_now} (the current average), and {avg_required} (the average still required to reach the goal).'),
         widget=I18nTextarea
     )
