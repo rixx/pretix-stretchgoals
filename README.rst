@@ -1,16 +1,30 @@
-pretix-avgchart
-===============
+pretix-stretchgoals
+===================
 
-This is a plugin for `pretix`_ that charts average prices over time.
+This is a plugin for `pretix`_ that allows you to define public or private goals that you want to reach in your presale.
 
 .. image:: ./assets/screenshot.png
+
+Installation
+------------
+
+`pretix-stretchgoals` has not been released on PyPI yet, so you have to install it from this repository::
+
+   pip install git+https://github.com/rixx/pretix-stretchgoals.git
+
+Then go to your event's plugin settings, and activate `pretix-stretchgoals`:
+
+.. image:: ./assets/activate.png
+
+You will now find a new entry in your side bar, and can proceed to configure the settings, add goals, and either look
+at them in the backend, or present them publicly in your frontend.
 
 Development setup
 -----------------
 
 1. Make sure that you have a working `pretix development setup`_.
 
-2. Clone this repository, eg to ``local/pretix-avgchart``.
+2. Clone this repository, eg to ``local/pretix-stretchgoals``.
 
 3. Activate the virtual environment you use for pretix development.
 
