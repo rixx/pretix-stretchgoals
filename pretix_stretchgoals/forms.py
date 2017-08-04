@@ -10,23 +10,19 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
     stretchgoals_start_date = forms.DateField(
         required=False,
         label=_('Start date'),
-        help_text=_('Will start at first sale otherwise.')
+        help_text=_('Will start at first sale by default.')
     )
     stretchgoals_end_date = forms.DateField(
         required=False,
         label=_('End date'),
-        help_text=_('Will end at last sale otherwise.')
-    )
-    stretchgoals_is_public = forms.BooleanField(
-        required=False,
-        label=_('Show publicly'),
-        help_text=_('By default, the chart is only shown in the backend.')
+        help_text=_('Will end at last sale by default.')
     )
     stretchgoals_items = forms.ModelMultipleChoiceField(
-        Item.objects.all(),
+        queryset=Item.objects.all(),
         required=False,
-        label=_('Ticket types'),
-        help_text=_('Tickets to be included in the calculation.'),
+        label=_('Item types'),
+        help_text=_('Items to be included in the calculation.'),
+        widget=forms.CheckboxSelectMultiple,
     )
     stretchgoals_items_to_be_sold = forms.IntegerField(
         required=False,
@@ -43,6 +39,11 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         required=False,
         label=_('Target value'),
         help_text=_('Do you need to reach a specific goal?')
+    )
+    stretchgoals_is_public = forms.BooleanField(
+        required=False,
+        label=_('Show publicly'),
+        help_text=_('By default, the chart is only shown in the backend.')
     )
     stretchgoals_public_text = I18nFormField(
         required=False,

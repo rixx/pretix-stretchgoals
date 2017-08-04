@@ -1,6 +1,6 @@
-from datetime import date, timedelta
 import decimal
 import json
+from datetime import date, timedelta
 
 from django.core.urlresolvers import reverse
 from django.db.models import Avg, Sum

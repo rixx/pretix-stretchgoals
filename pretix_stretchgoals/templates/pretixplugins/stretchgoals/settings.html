@@ -15,28 +15,56 @@
         {% bootstrap_form_errors form %}
 
         <legend>{% trans "General settings" %}</legend>
-            <fieldset>
-                {% bootstrap_field form.stretchgoals_start_date layout="horizontal" %}
-                {% bootstrap_field form.stretchgoals_end_date layout="horizontal" %}
-                {% bootstrap_field form.stretchgoals_items layout="horizontal" %}
-                {% bootstrap_field form.stretchgoals_include_pending layout="horizontal" %}
-            </fieldset>
+        <div class="col-md-3"></div>
+        <div class="col-md-9">
+            {% blocktrans trimmed %}
+                These settings decide which timespan and which items are included in the calculation of
+                all goals below (for example, you might not want to include anything sold after a certain
+                date, or only include admission tickets, but not T-shirts).
+            {% endblocktrans %}
+            <p>
+        </div>
+        <div class="col-md-12"><fieldset>
+            {% bootstrap_field form.stretchgoals_start_date layout="horizontal" %}
+            {% bootstrap_field form.stretchgoals_end_date layout="horizontal" %}
+            {% bootstrap_field form.stretchgoals_items layout="horizontal" %}
+            {% bootstrap_field form.stretchgoals_include_pending layout="horizontal" %}
+        </fieldset></div>
 
         <legend>{% trans "Goals" %}</legend>
-            <fieldset>
-            </fieldset>
+        <div class="col-md-3"></div>
+        <div class="col-md-9">
+            {% blocktrans trimmed %}
+                Here you can define one or multiple goals you want to reach during your presale.
+                You need to enter at least a total goal – if you supply information on how many
+                items you hope to sell, we can calculate the required average price (total aswell as
+                current), too.
+            {% endblocktrans %}
+            <p>
+        </div>
+        <div class="col-md-12"><fieldset>
+        </fieldset></div>
 
         <legend>{% trans "Display" %}</legend>
-            <fieldset>
-                {% bootstrap_field form.stretchgoals_is_public layout="horizontal" %}
-                {% bootstrap_field form.stretchgoals_public_text layout="horizontal" %}
-            </fieldset>
-
-        <div class="form-group submit-group">
-            <button type="submit" class="btn btn-primary btn-save">
-                {% trans "Save" %}
-            </button>
+        <div class="col-md-3"></div>
+        <div class="col-md-9">
+            {% blocktrans trimmed %}
+                These settings decide if, where, and how much information on your stretch goals is
+                shown publically.
+            {% endblocktrans %}
+            <p>
         </div>
+        <div class="col-md-12"><fieldset>
+            {% bootstrap_field form.stretchgoals_is_public layout="horizontal" %}
+            {% bootstrap_field form.stretchgoals_public_text layout="horizontal" %}
+        </fieldset></div>
+    </div>
+
+    <div class="form-group submit-group">
+        <button type="submit" class="btn btn-primary btn-save">
+            {% trans "Save" %}
+        </button>
+    </div>
     </form>
 
 {% endblock %}
