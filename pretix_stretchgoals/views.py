@@ -16,7 +16,7 @@ from pretix.control.views.event import EventSettingsFormView
 from pretix.presale.utils import event_view
 
 from .forms import StretchgoalsSettingsForm
-from .utils import get_goals, set_goals
+from .utils import get_goals, set_goals, get_cache_key, invalidate_cache
 
 
 class AvgChartMixin:
@@ -84,14 +84,11 @@ class AvgChartMixin:
         except:
             return None
 
-    def get_cache_key(self):
-        return 'stretchgoals_data_{}'.format(self.request.event.slug)
-
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data()
         ctx['public_text'] = str(self.request.event.settings.get('stretchgoals_public_text', as_type=LazyI18nString))
         cache = self.request.event.get_cache()
-        cache_key = self.get_cache_key()
+        cache_key = get_cache_key(self.request.event)
 
         try:
             chart_data = cache.get(cache_key)
@@ -134,10 +131,14 @@ class AvgChartMixin:
 class ControlView(ChartContainingView, AvgChartMixin, TemplateView):
     template_name = 'pretixplugins/stretchgoals/control.html'
 
-    def get_context_data(self, event=None, organizer=None):
-        if 'refresh' in self.request.GET:
-            self.request.event.get_cache().delete(self.get_cache_key())
-        return super().get_context_data(event=event, organizer=organizer)
+    def dispatch(self, request, *args, **kwargs):
+        if 'refresh' in request.GET:
+            invalidate_cache(request.event)
+            return redirect(reverse('plugins:pretix_stretchgoals:control', kwargs={
+                'organizer': request.event.organizer.slug,
+                'event': request.event.slug,
+            }))
+        return super().dispatch(request, *args, **kwargs)
 
 
 @method_decorator(event_view, name='dispatch')
