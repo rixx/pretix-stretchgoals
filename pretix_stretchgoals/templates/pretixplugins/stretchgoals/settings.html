@@ -42,7 +42,26 @@
             {% endblocktrans %}
             <p>
         </div>
+        <label class="col-md-3 control-label">{% trans "Current goals" %}</label>
+        <div class="col-md-9">
+            <ul>
+            {% for goal in form.goals %}
+                <li>
+                    "{{ goal.name }}": {{ goal.total }}
+                    {% if goal.amount %}({{ goal.amount }} {% trans "items" %}){% endif %}
+                    <a href="?delete={{ forloop.counter }}" class="btn btn-xs btn-danger">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+            <p>
+        </div>
         <div class="col-md-12"><fieldset>
+            {% bootstrap_field form.stretchgoals_new_name layout="horizontal" %}
+            {% bootstrap_field form.stretchgoals_new_total layout="horizontal" %}
+            {% bootstrap_field form.stretchgoals_new_amount layout="horizontal" %}
+            {% bootstrap_field form.stretchgoals_new_description layout="horizontal" %}
         </fieldset></div>
 
         <legend>{% trans "Display" %}</legend>
