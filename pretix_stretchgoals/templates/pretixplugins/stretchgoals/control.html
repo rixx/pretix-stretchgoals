@@ -8,7 +8,7 @@
 
 {% block content %}
     <h1>
-        {% trans "Define Stretch Goals" %}
+        {% trans "Stretch Goals" %}
         <small><a href="{% url "plugins:pretix_stretchgoals:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a></small>
 
         {% if request.event.settings.stretchgoals_is_public %}
@@ -16,5 +16,28 @@
         {% endif %}
     </h1>
 
-    {% include "pretixplugins/stretchgoals/chart.html" %}
+    {% if not request.event.settings.stretchgoals_goals %}
+        <div class="alert alert-info">
+            {% blocktrans trimmed %}
+                You have not configured any goals yet – head over to the settings, and we'll guide you through the process!
+            {% endblocktrans %}
+        </div>
+    {% endif %}
+
+    <div>
+        {% blocktrans trimmed %}
+            Goals (and further stretch goals) are a wonderful thing to bring a community together –
+            you show transparently how much revenue you need to make to achieve certain goals, and
+            everybody can choose how much to contribute. Public goals are especially useful coupled
+            with pretix' "free price input" feature, which allows you to set a minimum price, but
+            lets every customer choose how much they want to give additionally.
+        {% endblocktrans %}<p>
+        {% blocktrans trimmed %}
+            You can also keep your goals private, and use this page to check your progress.
+        {% endblocktrans %}
+    </div>
+
+    {% if request.event.settings.stretchgoals_goals %}
+        {% include "pretixplugins/stretchgoals/chart.html" %}
+    {% endif %}
 {% endblock %}
