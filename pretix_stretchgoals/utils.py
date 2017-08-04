@@ -14,3 +14,11 @@ def get_goals(event):
 
 def set_goals(event, goals):
     event.settings.set('stretchgoals_goals', json.dumps(goals, cls=I18nJSONEncoder))
+
+
+def get_cache_key(event):
+    return 'stretchgoals_data_{}'.format(event.slug)
+
+
+def invalidate_cache(event):
+    event.get_cache().delete(get_cache_key(event))
