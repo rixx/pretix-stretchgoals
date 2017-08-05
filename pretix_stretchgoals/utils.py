@@ -14,6 +14,9 @@ def get_goals(event):
 
 def set_goals(event, goals):
     goals = sorted(goals, key=lambda x: x['total'])
+    for goal in goals:
+        if goal['amount'] and goal['total']:
+            goal['avg'] = round(goal['total'] / goal['amount'], 2)
     event.settings.set('stretchgoals_goals', json.dumps(goals, cls=I18nJSONEncoder))
 
 
