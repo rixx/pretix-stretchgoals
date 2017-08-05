@@ -3,7 +3,13 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">{% trans "Average ticket prices" %}</h3>
+        <h3 class="panel-title">
+            {% if label == 'avg' %}
+                {% trans "Average price" %}
+            {% elif label == 'total' %}
+                {% trans "Total revenue" %}
+            {% endif %}
+        </h3>
     </div>
     <div class="panel-body">
         <div id="{{ label }}_chart" class="chart"></div>
@@ -12,24 +18,24 @@
 
 <script type="application/json" id="{{ label }}-data">{{ data|safe }}</script>
 <script type="text/javascript">
-$(function () {
-    $(".chart").css("height", "350px");
+    $(function () {
+        $(".chart").css("height", "300px");
 
-    new Morris.Area({
-        element: '{{ label }}_chart',
-        goals: [JSON.parse($("#{{ label }}-data").html()).target],
-        data: JSON.parse($("#{{ label }}-data").html()).data,
-        xkey: 'date',
-        ykeys: ['price'],
-        labels: [gettext('Average ticket price')],
-        postUnits: ' €',
+        new Morris.Area({
+            element: '{{ label }}_chart',
+            goals: [JSON.parse($("#{{ label }}-data").html()).target || null],
+            data: JSON.parse($("#{{ label }}-data").html()).data,
+            xkey: 'date',
+            ykeys: ['price'],
+            labels: [gettext({% if label == 'avg' %}'Average price'{% elif label == 'total' %}'Total revenue'{% else %}''{% endif %})],
+            postUnits: ' €',
 
-        smooth: false,
-        resize: true,
-        fillOpacity: 0.3,
-        behaveLikeLine: true,
-        goalLineColors: ["#33c33c"],
-        goalStrokeWidth: 4,
+            smooth: false,
+            resize: true,
+            fillOpacity: 0.3,
+            behaveLikeLine: true,
+            goalLineColors: ["#33c33c"],
+            goalStrokeWidth: 4,
+        });
     });
-});
 </script>
