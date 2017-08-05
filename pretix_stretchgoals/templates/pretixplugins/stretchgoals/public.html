@@ -7,30 +7,58 @@
 {% if request.event.stretchgoals_is_public %}
 
     {% block custom_header %}
+        <script type="text/javascript" src="{% static "charts/raphael-min.js" %}"></script>
+        <script type="text/javascript" src="{% static "charts/morris.js" %}"></script>
         <link rel="stylesheet" href="{% static "charts/morris.css" %}" type="text/css" />
     {% endblock %}
 
-    {% block title %}{% trans "Ticket Prices" %} :: {{ event.name }}{% endblock %}
+    {% block title %}{% trans "Presale Goals" %} :: {{ event.name }}{% endblock %}
 
     {% block content %}
-        <h2>{% trans "Ticket Prices" %}</h2>
+        <h2>{% trans "Presale Goals" %}</h2>
+
         {% blocktrans trimmed %}
-        This chart shows the average price paid for conference tickets over the whole presale
-        period.
         {% endblocktrans %}
-        {% if data.target %}
-            {% blocktrans trimmed with goal=data.target %}
-            The green line shows the target of {{ data.target }} € per ticket.
-            {% endblocktrans %}
-        {% endif %}
+
         {{ public_text|rich_text }}
-        <div class="panel-body">
-            <div id="avg_chart" class="chart"></div>
-        </div>
-        <script type="application/json" id="avg-data">{{ data|safe }}</script>
-        <script type="text/javascript" src="{% static "charts/raphael-min.js" %}"></script>
-        <script type="text/javascript" src="{% static "charts/morris.js" %}"></script>
-        <script type="application/javascript" src="{% static "pretixplugins/stretchgoals/avgchart.js" %}"></script>
+
+        {% if request.event.settings.stretchgoals_chart_totals %}
+            {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}
+        {% endif %}
+            <ul>
+                {% for goal in goals %}
+                    <li>
+                        {% if goal.total_left <= 0 %}
+                            {% blocktrans trimmed with total=goal.total number=forloop.counter %}
+                                Goal #{{ number }} of {{ total }} € has been met!
+                            {% endblocktrans %}
+                        {% else %}
+                            {% blocktrans trimmed with total=goal.total left=goal.total_left number=forloop.counter  %}
+                            To reach goal #{{ number }} of {{ total }} €, the remaining tickets need to sell for a total of {{ left }} €.
+                            {% endblocktrans %}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+        {% if request.event.settings.stretchgoals_chart_averages %}
+            {% include "pretixplugins/stretchgoals/chart.html" with data=data.avg_data label="avg" %}
+            <ul>
+                {% for goal in goals %}{% if goal.avg_required %}
+                    <li>
+                        {% if goal.avg_required <= 0 %}
+                            {% blocktrans trimmed with total=goal.avg number=forloop.counter %}
+                                Goal #{{ number }} of {{ total }} € average sales price has been met!
+                            {% endblocktrans %}
+                        {% else %}
+                            {% blocktrans trimmed with total=goal.avg number=forloop.counter required=goal.avg_required %}
+                            To reach goal #{{ number }} of {{ total }} € average sales price, the remaining tickets need to sell at an average of {{ required }} €.
+                            {% endblocktrans %}
+                        {% endif %}
+                    </li>
+                {% endif %}{% endfor %}
+            </ul>
+        {% endif %}
     {% endblock %}
 
 {% endif %}
