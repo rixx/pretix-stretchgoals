@@ -107,7 +107,6 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
 
         if new_goal['total']:
             goals.append(new_goal)
-            goals = sorted(goals, key=lambda x: x['total'])
             set_goals(self.event, goals)
 
     def save(self, *args, **kwargs):

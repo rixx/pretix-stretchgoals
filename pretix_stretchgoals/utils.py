@@ -13,6 +13,7 @@ def get_goals(event):
 
 
 def set_goals(event, goals):
+    goals = sorted(goals, key=lambda x: x['total'])
     event.settings.set('stretchgoals_goals', json.dumps(goals, cls=I18nJSONEncoder))
 
 
