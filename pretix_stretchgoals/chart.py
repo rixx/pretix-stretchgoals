@@ -66,23 +66,20 @@ def get_total_price(event, start_date, end_date, items, include_pending):
     return round(qs.aggregate(Sum('price')).get('price__sum') or 0, 2)
 
 
-def get_required_average_price(event, items, include_pending, target, total_count):
+def get_required_average_price(event, items, include_pending, target, total_count, total_now):
     if not target:
         return
     all_orders = get_queryset(event, items, include_pending).filter(
-        order__datetime__gte=get_start_date(event, items, include_pending),
-        order__datetime__lte=get_end_date(event, items, include_pending)
+        order__datetime__date__gte=get_start_date(event, items, include_pending),
+        order__datetime__date__lte=get_end_date(event, items, include_pending)
     )
     current_count = all_orders.count()
 
-    current_total = all_orders.aggregate(Sum('price')).get('price__sum') or 0
-    goal_total = total_count * target
-
-    if current_total > goal_total:
+    if total_now > target:
         return 0
 
     try:
-        return round((goal_total - float(current_total)) / (total_count - current_count), 2)
+        return round((target - total_now) / (total_count - current_count), 2)
     except Exception as e:
         return None
 
@@ -140,7 +137,7 @@ def get_chart_and_text(event):
     result['total_now'] = data['total_data']['data'][-1]['price']
 
     for goal in goals:
-        goal['avg_required'] = get_required_average_price(event, items, include_pending, goal['avg'], goal['amount'])
+        goal['avg_required'] = get_required_average_price(event, items, include_pending, goal['total'], goal['amount'], result['total_now'])
         goal['total_left'] = goal['total'] - result['total_now']
 
     result['goals'] = goals
