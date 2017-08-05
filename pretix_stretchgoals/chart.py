@@ -100,10 +100,10 @@ def get_chart_and_text(event):
     cache = event.get_cache()
     cache_key = get_cache_key(event)
     chart_data = cache.get(cache_key)
-    public_text = cache.get(cache_key + '_text')
     if chart_data:
-        return chart_data, public_text
+        return chart_data
 
+    result = {}
     include_pending = event.settings.stretchgoals_include_pending or False
     avg_chart = event.settings.stretchgoals_chart_averages or False
     total_chart = event.settings.stretchgoals_chart_totals or False
@@ -113,7 +113,6 @@ def get_chart_and_text(event):
         lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',') if element]
     )
     items = event.settings.get('stretchgoals_items', as_type=QuerySet) or []
-    target_value = 0
 
     start_date = get_start_date(event, items, include_pending)
     end_date = get_end_date(event, items, include_pending)
@@ -124,7 +123,7 @@ def get_chart_and_text(event):
                 'date': date.strftime('%Y-%m-%d'),
                 'price': get_average_price(event, start_date, date, items, include_pending) or 0,
             } for date in get_date_range(start_date, end_date)] if avg_chart else None,
-            'target': [round(goal['total'] / goal['amount'], 2) if goal['amount'] else 0 for goal in goals],
+            'target': [goal.get('avg', 0) for goal in goals],
             'label': 'avg',
         },
         'total_data': {
@@ -136,11 +135,15 @@ def get_chart_and_text(event):
             'label': 'total',
         },
     }
-    chart_data = {
-        key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()
-    }
-    result['public_text'] = get_public_text(event, items, include_pending, data=result)
+    result['data'] = {key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()}
+    result['avg_now'] = data['avg_data']['data'][-1]['price']
+    result['total_now'] = data['total_data']['data'][-1]['price']
 
-    cache.set(cache_key, chart_data, timeout=3600)
-    cache.set(cache_key + '_text', public_text, timeout=3600)
-    return chart_data, public_text
+    for goal in goals:
+        goal['avg_required'] = get_required_average_price(event, items, include_pending, goal['avg'], goal['amount'])
+        goal['total_left'] = goal['total'] - result['total_now']
+
+    result['goals'] = goals
+    result['public_text'] = get_public_text(event, items, include_pending, data=result)
+    cache.set(cache_key, result, timeout=3600)
+    return result

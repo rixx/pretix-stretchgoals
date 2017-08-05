@@ -3,7 +3,6 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from pretix.control.views import ChartContainingView
 from pretix.control.views.event import EventSettingsFormView
 from pretix.presale.utils import event_view
 
@@ -21,10 +20,8 @@ class ChartMixin:
 
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data()
-        data, text = get_chart_and_text(self.request.event)
+        ctx.update(get_chart_and_text(self.request.event))
 
-        ctx['data'] = data
-        ctx['public_text'] = text
         return ctx
 
 
