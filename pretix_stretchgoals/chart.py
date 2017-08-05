@@ -66,7 +66,7 @@ def get_total_price(event, start_date, end_date, items, include_pending):
     return round(qs.aggregate(Sum('price')).get('price__sum') or 0, 2)
 
 
-def get_required_average_price(event, items, include_pending, target):
+def get_required_average_price(event, items, include_pending, target, total_count):
     if not target:
         return
     all_orders = get_queryset(event, items, include_pending).filter(
@@ -74,7 +74,6 @@ def get_required_average_price(event, items, include_pending, target):
         order__datetime__lte=get_end_date(event, items, include_pending)
     )
     current_count = all_orders.count()
-    total_count = int(event.settings.get('stretchgoals_items_to_be_sold') or 0)
 
     current_total = all_orders.aggregate(Sum('price')).get('price__sum') or 0
     goal_total = total_count * target
@@ -83,7 +82,7 @@ def get_required_average_price(event, items, include_pending, target):
         return 0
 
     try:
-        return round((goal_total - current_total) / (total_count - current_count), 2)
+        return round((goal_total - float(current_total)) / (total_count - current_count), 2)
     except Exception as e:
         return None
 
