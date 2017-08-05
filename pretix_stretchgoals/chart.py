@@ -87,13 +87,11 @@ def get_required_average_price(event, items, include_pending, target, total_coun
         return None
 
 
-def get_public_text(event, items, include_pending, target_value, data=None):
+def get_public_text(event, items, include_pending, data=None):
     text = str(event.settings.get('stretchgoals_public_text', as_type=LazyI18nString))
     if data:
         text = text.format(**{
-            'target': data['avg_data']['target'],
-            'avg_now': data['avg_data']['data'][-1]['price'] if data['avg_data'] else None,
-            'avg_required': get_required_average_price(event, items, include_pending, target_value)
+            'avg_now': data['avg_now']
         })
     return text
 
@@ -141,7 +139,7 @@ def get_chart_and_text(event):
     chart_data = {
         key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()
     }
-    public_text = get_public_text(event, items, include_pending, target_value, data=data)
+    result['public_text'] = get_public_text(event, items, include_pending, data=result)
 
     cache.set(cache_key, chart_data, timeout=3600)
     cache.set(cache_key + '_text', public_text, timeout=3600)

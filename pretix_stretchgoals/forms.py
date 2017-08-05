@@ -78,8 +78,8 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
     stretchgoals_public_text = I18nFormField(
         required=False,
         label=_('Text shown on the public page.'),
-        help_text=_('Text shown on the public page. You can use the placeholders {target} (the target average), '
-                    '{avg_now} (the current average), and {avg_required} (the average still required to reach the goal).'),
+        help_text=_('Text shown on the public page. You can use the placeholder '
+                    '{avg_now} (the current average).'),
         widget=I18nTextarea
     )
 
