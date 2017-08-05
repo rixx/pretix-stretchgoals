@@ -12,7 +12,12 @@ from .forms import StretchgoalsSettingsForm
 from .utils import get_goals, invalidate_cache, set_goals
 
 
-class AvgChartMixin:
+class ChartMixin:
+
+    def get(self, request, *args, **kwargs):
+        resp = super().get(request, *args, **kwargs)
+        resp['Content-Security-Policy'] = "script-src 'unsafe-eval' 'unsafe-inline'; style-src 'unsafe-inline'"
+        return resp
 
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data()
@@ -23,7 +28,7 @@ class AvgChartMixin:
         return ctx
 
 
-class ControlView(ChartContainingView, AvgChartMixin, TemplateView):
+class ControlView(ChartMixin, TemplateView):
     template_name = 'pretixplugins/stretchgoals/control.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -37,7 +42,7 @@ class ControlView(ChartContainingView, AvgChartMixin, TemplateView):
 
 
 @method_decorator(event_view, name='dispatch')
-class PublicView(ChartContainingView, AvgChartMixin, TemplateView):
+class PublicView(ChartMixin, TemplateView):
     template_name = 'pretixplugins/stretchgoals/public.html'
 
     def dispatch(self, request, *args, **kwargs):

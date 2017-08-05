@@ -127,6 +127,7 @@ def get_chart_and_text(event):
                 'price': get_average_price(event, start_date, date, items, include_pending) or 0,
             } for date in get_date_range(start_date, end_date)] if avg_chart else None,
             'target': float(target_value),
+            'label': 'avg',
         },
         'total_data': {
             'data': [{
@@ -134,6 +135,7 @@ def get_chart_and_text(event):
                 'price': get_total_price(event, start_date, date, items, include_pending) or 0,
             } for date in get_date_range(start_date, end_date)] if total_chart else None,
             'target': float(target_value),
+            'label': 'total',
         },
     }
     chart_data = {
