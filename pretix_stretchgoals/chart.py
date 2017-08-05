@@ -8,7 +8,7 @@ from i18nfield.strings import LazyI18nString
 from pretix.base.models import Item, OrderPosition
 
 from .json import ChartJSONEncoder
-from .utils import get_cache_key
+from .utils import get_cache_key, get_goals
 
 
 def get_queryset(event, items, include_pending):
@@ -120,13 +120,14 @@ def get_chart_and_text(event):
 
     start_date = get_start_date(event, items, include_pending)
     end_date = get_end_date(event, items, include_pending)
+    goals = get_goals(event)
     data = {
         'avg_data': {
             'data': [{
                 'date': date.strftime('%Y-%m-%d'),
                 'price': get_average_price(event, start_date, date, items, include_pending) or 0,
             } for date in get_date_range(start_date, end_date)] if avg_chart else None,
-            'target': float(target_value),
+            'target': [round(goal['total'] / goal['amount'], 2) if goal['amount'] else 0 for goal in goals],
             'label': 'avg',
         },
         'total_data': {
@@ -134,7 +135,7 @@ def get_chart_and_text(event):
                 'date': date.strftime('%Y-%m-%d'),
                 'price': get_total_price(event, start_date, date, items, include_pending) or 0,
             } for date in get_date_range(start_date, end_date)] if total_chart else None,
-            'target': float(target_value),
+            'target': [goal['total'] for goal in goals],
             'label': 'total',
         },
     }
