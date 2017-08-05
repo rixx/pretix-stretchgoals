@@ -92,8 +92,8 @@ def get_public_text(event, items, include_pending, target_value, data=None):
     text = str(event.settings.get('stretchgoals_public_text', as_type=LazyI18nString))
     if data:
         text = text.format(**{
-            'target': data['target'],
-            'avg_now': data['avg_data'][-1]['price'] if data['avg_data'] else None,
+            'target': data['avg_data']['target'],
+            'avg_now': data['avg_data']['data'][-1]['price'] if data['avg_data'] else None,
             'avg_required': get_required_average_price(event, items, include_pending, target_value)
         })
     return text
@@ -121,17 +121,24 @@ def get_chart_and_text(event):
     start_date = get_start_date(event, items, include_pending)
     end_date = get_end_date(event, items, include_pending)
     data = {
-        'avg_data': [{
-            'date': date.strftime('%Y-%m-%d'),
-            'price': get_average_price(event, start_date, date, items, include_pending) or 0,
-        } for date in get_date_range(start_date, end_date)] if avg_chart else None,
-        'total_data': [{
-            'date': date.strftime('%Y-%m-%d'),
-            'price': get_total_price(event, start_date, date, items, include_pending) or 0,
-        } for date in get_date_range(start_date, end_date)] if total_chart else None,
-        'target': float(target_value),
+        'avg_data': {
+            'data': [{
+                'date': date.strftime('%Y-%m-%d'),
+                'price': get_average_price(event, start_date, date, items, include_pending) or 0,
+            } for date in get_date_range(start_date, end_date)] if avg_chart else None,
+            'target': float(target_value),
+        },
+        'total_data': {
+            'data': [{
+                'date': date.strftime('%Y-%m-%d'),
+                'price': get_total_price(event, start_date, date, items, include_pending) or 0,
+            } for date in get_date_range(start_date, end_date)] if total_chart else None,
+            'target': float(target_value),
+        },
     }
-    chart_data = json.dumps(data, cls=ChartJSONEncoder)
+    chart_data = {
+        key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()
+    }
     public_text = get_public_text(event, items, include_pending, target_value, data=data)
 
     cache.set(cache_key, chart_data, timeout=3600)
