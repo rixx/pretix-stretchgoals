@@ -7,6 +7,7 @@ from django.utils.timezone import now
 from i18nfield.strings import LazyI18nString
 from pretix.base.models import Item, OrderPosition
 
+from .json import ChartJSONEncoder
 from .utils import get_cache_key
 
 
@@ -130,7 +131,7 @@ def get_chart_and_text(event):
         } for date in get_date_range(start_date, end_date)] if total_chart else None,
         'target': float(target_value),
     }
-    chart_data = json.dumps(data)
+    chart_data = json.dumps(data, cls=ChartJSONEncoder)
     public_text = get_public_text(event, items, include_pending, target_value, data=data)
 
     cache.set(cache_key, chart_data, timeout=3600)
