@@ -3,7 +3,7 @@ pretix-stretchgoals
 
 This is a plugin for `pretix`_ that allows you to define public or private goals that you want to reach in your presale.
 
-.. image:: ./assets/screenshot.png
+.. image:: ./assets/graphs.png
 
 Installation
 ------------
