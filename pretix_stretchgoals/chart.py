@@ -1,4 +1,3 @@
-import decimal
 import json
 from datetime import date, timedelta
 
@@ -58,6 +57,14 @@ def get_average_price(event, start_date, end_date, items, include_pending):
     return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
 
 
+def get_total_price(event, start_date, end_date, items, include_pending):
+    qs = get_queryset(event, items, include_pending).filter(
+        order__datetime__date__gte=start_date,
+        order__datetime__date__lte=end_date
+    )
+    return round(qs.aggregate(Sum('price')).get('price__sum') or 0, 2)
+
+
 def get_required_average_price(event, items, include_pending, target):
     if not target:
         return
@@ -85,7 +92,7 @@ def get_public_text(event, items, include_pending, target_value, data=None):
     if data:
         text = text.format(**{
             'target': data['target'],
-            'avg_now': data['data'][-1]['price'] if data['data'] else None,
+            'avg_now': data['avg_data'][-1]['price'] if data['avg_data'] else None,
             'avg_required': get_required_average_price(event, items, include_pending, target_value)
         })
     return text
@@ -99,21 +106,28 @@ def get_chart_and_text(event):
     if chart_data:
         return chart_data, public_text
 
+    include_pending = event.settings.stretchgoals_include_pending or False
+    avg_chart = event.settings.stretchgoals_chart_averages or False
+    total_chart = event.settings.stretchgoals_chart_totals or False
     event.settings._h.add_type(
         QuerySet,
         lambda queryset: ','.join([str(element.pk) for element in queryset]),
         lambda pk_list: [Item.objects.get(pk=element) for element in pk_list.split(',') if element]
     )
-    include_pending = event.settings.stretchgoals_include_pending or False
     items = event.settings.get('stretchgoals_items', as_type=QuerySet) or []
+    target_value = 0
+
     start_date = get_start_date(event, items, include_pending)
     end_date = get_end_date(event, items, include_pending)
-    target_value = decimal.Decimal(event.settings.stretchgoals_target_value or 0)
     data = {
-        'data': [{
+        'avg_data': [{
             'date': date.strftime('%Y-%m-%d'),
             'price': get_average_price(event, start_date, date, items, include_pending) or 0,
-        } for date in get_date_range(start_date, end_date)],
+        } for date in get_date_range(start_date, end_date)] if avg_chart else None,
+        'total_data': [{
+            'date': date.strftime('%Y-%m-%d'),
+            'price': get_total_price(event, start_date, date, items, include_pending) or 0,
+        } for date in get_date_range(start_date, end_date)] if total_chart else None,
         'target': float(target_value),
     }
     chart_data = json.dumps(data)
