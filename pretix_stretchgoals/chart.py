@@ -133,8 +133,8 @@ def get_chart_and_text(event):
         },
     }
     result['data'] = {key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()}
-    result['avg_now'] = data['avg_data']['data'][-1]['price']
-    result['total_now'] = data['total_data']['data'][-1]['price']
+    result['avg_now'] = data['avg_data']['data'][-1].get('price', 0)
+    result['total_now'] = data['total_data']['data'][-1].get('price', 0)
 
     for goal in goals:
         goal['avg_required'] = get_required_average_price(event, items, include_pending, goal['total'], goal['amount'], result['total_now'])
