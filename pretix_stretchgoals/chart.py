@@ -1,6 +1,7 @@
 import json
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
+import pytz
 from django.db.models import Avg, Sum
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
@@ -23,32 +24,34 @@ def get_queryset(event, items, include_pending):
 
 
 def get_start_date(event, items, include_pending):
+    tz = pytz.timezone(event.settings.timezone)
     start_date = event.settings.get('stretchgoals_start_date', as_type=date)
     if start_date:
         return start_date
     first_order = get_queryset(event, items, include_pending).first()
     if first_order:
         if include_pending:
-            return first_order.order.datetime.date()
-        return first_order.order.payment_date.date()
+            return first_order.order.datetime.astimezone(tz).date()
+        return first_order.order.payment_date.astimezone(tz).date()
     else:
-        return (now() - timedelta(days=2)).date()
+        return (now() - timedelta(days=2)).astimezone(tz).date()
 
 
 def get_end_date(event, items, include_pending):
+    tz = pytz.timezone(event.settings.timezone)
     end_date = event.settings.get('stretchgoals_end_date', as_type=date)
     if end_date:
         return end_date
     last_order = get_queryset(event, items, include_pending).last()
     if last_order:
         if include_pending:
-            last_date = last_order.order.datetime.date()
+            last_date = last_order.order.datetime.astimezone(tz).date()
         else:
-            last_date = last_order.order.payment_date.date()
-        if last_date == now().date():
+            last_date = last_order.order.payment_date.astimezone(tz).date()
+        if last_date == now().astimezone(tz).date():
             last_date -= timedelta(days=1)
     else:
-        last_date = (now() - timedelta(days=1)).date()
+        last_date = (now() - timedelta(days=1)).astimezone(tz).date()
     return last_date
 
 
@@ -58,29 +61,35 @@ def get_date_range(start_date, end_date):
 
 
 def get_average_price(event, start_date, end_date, items, include_pending):
+    tz = pytz.timezone(event.settings.timezone)
+    start_dt = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz)
+    end_dt = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, tzinfo=tz)
     if include_pending:
         qs = get_queryset(event, items, include_pending).filter(
-            order__datetime__date__gte=start_date,
-            order__datetime__date__lte=end_date
+            order__datetime__gte=start_dt,
+            order__datetime__lte=end_dt
         )
     else:
         qs = get_queryset(event, items, include_pending).filter(
-            order__payment_date__date__gte=start_date,
-            order__payment_date__date__lte=end_date
+            order__payment_date__gte=start_dt,
+            order__payment_date__lte=end_dt
         )
     return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
 
 
 def get_total_price(event, start_date, end_date, items, include_pending):
+    tz = pytz.timezone(event.settings.timezone)
+    start_dt = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz)
+    end_dt = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, tzinfo=tz)
     if include_pending:
         qs = get_queryset(event, items, include_pending).filter(
-            order__datetime__date__gte=start_date,
-            order__datetime__date__lte=end_date
+            order__datetime__gte=start_dt,
+            order__datetime__lte=end_dt
         )
     else:
         qs = get_queryset(event, items, include_pending).filter(
-            order__payment_date__date__gte=start_date,
-            order__payment_date__date__lte=end_date
+            order__payment_date__gte=start_dt,
+            order__payment_date__lte=end_dt
         )
     return round(qs.aggregate(Sum('price')).get('price__sum') or 0, 2)
 
@@ -88,15 +97,20 @@ def get_total_price(event, start_date, end_date, items, include_pending):
 def get_required_average_price(event, items, include_pending, target, total_count, total_now):
     if not target:
         return
+    start_date = get_start_date(event, items, include_pending)
+    end_date = get_end_date(event, items, include_pending)
+    tz = pytz.timezone(event.settings.timezone)
+    start_dt = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz)
+    end_dt = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, tzinfo=tz)
     if include_pending:
         all_orders = get_queryset(event, items, include_pending).filter(
-            order__datetime__date__gte=get_start_date(event, items, include_pending),
-            order__datetime__date__lte=get_end_date(event, items, include_pending)
+            order__datetime__gte=start_dt,
+            order__datetime__lte=end_dt
         )
     else:
         all_orders = get_queryset(event, items, include_pending).filter(
-            order__payment_date__date__gte=get_start_date(event, items, include_pending),
-            order__payment_date__date__lte=get_end_date(event, items, include_pending)
+            order__payment_date__gte=start_dt,
+            order__payment_date__lte=end_dt
         )
     current_count = all_orders.count()
 
