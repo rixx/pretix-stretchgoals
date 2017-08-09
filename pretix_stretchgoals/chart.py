@@ -17,7 +17,9 @@ def get_queryset(event, items, include_pending):
     qs = qs.filter(order__status__in=allowed_states)
     if items:
         qs = qs.filter(item__in=items)
-    return qs.order_by('order__datetime')
+    if include_pending:
+        return qs.order_by('order__datetime')
+    return qs.order_by('order__payment_date')
 
 
 def get_start_date(event, items, include_pending):
@@ -26,7 +28,9 @@ def get_start_date(event, items, include_pending):
         return start_date
     first_order = get_queryset(event, items, include_pending).first()
     if first_order:
-        return first_order.order.datetime.date()
+        if include_pending:
+            return first_order.order.datetime.date()
+        return first_order.order.payment_date.date()
     else:
         return (now() - timedelta(days=2)).date()
 
@@ -37,7 +41,10 @@ def get_end_date(event, items, include_pending):
         return end_date
     last_order = get_queryset(event, items, include_pending).last()
     if last_order:
-        last_date = last_order.order.datetime.date()
+        if include_pending:
+            last_date = last_order.order.datetime.date()
+        else:
+            last_date = last_order.order.payment_date.date()
         if last_date == now().date():
             last_date -= timedelta(days=1)
     else:
@@ -51,28 +58,46 @@ def get_date_range(start_date, end_date):
 
 
 def get_average_price(event, start_date, end_date, items, include_pending):
-    qs = get_queryset(event, items, include_pending).filter(
-        order__datetime__date__gte=start_date,
-        order__datetime__date__lte=end_date
-    )
+    if include_pending:
+        qs = get_queryset(event, items, include_pending).filter(
+            order__datetime__date__gte=start_date,
+            order__datetime__date__lte=end_date
+        )
+    else:
+        qs = get_queryset(event, items, include_pending).filter(
+            order__payment_date__date__gte=start_date,
+            order__payment_date__date__lte=end_date
+        )
     return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
 
 
 def get_total_price(event, start_date, end_date, items, include_pending):
-    qs = get_queryset(event, items, include_pending).filter(
-        order__datetime__date__gte=start_date,
-        order__datetime__date__lte=end_date
-    )
+    if include_pending:
+        qs = get_queryset(event, items, include_pending).filter(
+            order__datetime__date__gte=start_date,
+            order__datetime__date__lte=end_date
+        )
+    else:
+        qs = get_queryset(event, items, include_pending).filter(
+            order__payment_date__date__gte=start_date,
+            order__payment_date__date__lte=end_date
+        )
     return round(qs.aggregate(Sum('price')).get('price__sum') or 0, 2)
 
 
 def get_required_average_price(event, items, include_pending, target, total_count, total_now):
     if not target:
         return
-    all_orders = get_queryset(event, items, include_pending).filter(
-        order__datetime__date__gte=get_start_date(event, items, include_pending),
-        order__datetime__date__lte=get_end_date(event, items, include_pending)
-    )
+    if include_pending:
+        all_orders = get_queryset(event, items, include_pending).filter(
+            order__datetime__date__gte=get_start_date(event, items, include_pending),
+            order__datetime__date__lte=get_end_date(event, items, include_pending)
+        )
+    else:
+        all_orders = get_queryset(event, items, include_pending).filter(
+            order__payment_date__date__gte=get_start_date(event, items, include_pending),
+            order__payment_date__date__lte=get_end_date(event, items, include_pending)
+        )
     current_count = all_orders.count()
 
     if total_now > target:
