@@ -26,12 +26,12 @@
                     {% for goal in goals %}
                         <li>
                             {% if goal.total_left <= 0 %}
-                                {% blocktrans trimmed with total=goal.total number=forloop.counter %}
-                                    Goal #{{ number }} of {{ total }} € has been met!
+                                {% blocktrans trimmed with total=goal.total number=goal.name %}
+                                    Goal "{{ name }}" of {{ total }} € has been met!
                                 {% endblocktrans %}
                             {% else %}
-                                {% blocktrans trimmed with total=goal.total left=goal.total_left number=forloop.counter  %}
-                                To reach goal #{{ number }} of {{ total }} €, the remaining tickets need to sell for a total of {{ left }} €.
+                                {% blocktrans trimmed with total=goal.total left=goal.total_left name=goal.name %}
+                                To reach goal "{{ name }}" of {{ total }} €, the remaining tickets need to sell for a total of {{ left }} €.
                                 {% endblocktrans %}
                             {% endif %}
                         </li>
@@ -47,12 +47,12 @@
                     {% for goal in goals %}{% if goal.avg_required %}
                         <li>
                             {% if goal.avg_required <= 0 %}
-                                {% blocktrans trimmed with total=goal.avg number=forloop.counter %}
-                                    Goal #{{ number }} of {{ total }} € average sales price has been met!
+                                {% blocktrans trimmed with total=goal.avg name=goal.name %}
+                                    Goal "{{ name }}" of {{ total }} € average sales price has been met!
                                 {% endblocktrans %}
                             {% else %}
-                                {% blocktrans trimmed with total=goal.avg number=forloop.counter required=goal.avg_required %}
-                                To reach goal #{{ number }} of {{ total }} € average sales price, the remaining tickets need to sell at an average of {{ required }} €.
+                                {% blocktrans trimmed with total=goal.avg name=goal.name required=goal.avg_required %}
+                                To reach goal "{{ name }}" of {{ total }} € average sales price, the remaining tickets need to sell at an average of {{ required }} €.
                                 {% endblocktrans %}
                             {% endif %}
                         </li>
