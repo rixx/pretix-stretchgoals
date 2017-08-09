@@ -20,7 +20,7 @@
         {% blocktrans trimmed %}
         {% endblocktrans %}
 
-        {{ public_text|rich_text }}
+        {{ request.event.settings.stretch_goals_public_text|rich_text }}
 
         {% if request.event.settings.stretchgoals_chart_totals %}
             {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}
