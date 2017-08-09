@@ -170,6 +170,10 @@ def get_chart_and_text(event):
         goal['total_left'] = goal['total'] - result['total_now']
 
     result['goals'] = goals
+    result['significant'] = (
+        not event.settings.stretchgoals_min_orders
+        or get_queryset(event, items, include_pending).count() >= event.settings.get('stretchgoals_min_orders', as_type=int)
+    )
     result['public_text'] = get_public_text(event, items, include_pending, data=result)
     cache.set(cache_key, result, timeout=3600)
     return result

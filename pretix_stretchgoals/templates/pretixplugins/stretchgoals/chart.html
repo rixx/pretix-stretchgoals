@@ -12,6 +12,11 @@
         </h3>
     </div>
     <div class="panel-body">
+        <noscript>
+            <div class="alert alert-warning">
+                {% trans "JavaScript is required to show the chart at this time, sorry!" %}
+            </div>
+        </noscript>
         <div id="{{ label }}_chart" class="chart"></div>
     </div>
 </div>
@@ -31,7 +36,6 @@
             ykeys: ['price'],
             labels: [gettext({% if label == 'avg' %}'Average price'{% elif label == 'total' %}'Total revenue'{% else %}''{% endif %})],
             postUnits: ' €',
-
             smooth: false,
             resize: true,
             fillOpacity: 0.3,

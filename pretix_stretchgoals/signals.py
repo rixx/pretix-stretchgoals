@@ -1,6 +1,9 @@
 from django.core.urlresolvers import resolve, reverse
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from i18nfield.strings import LazyI18nString
+
+from pretix.base.settings import settings_hierarkey
 from pretix.control.signals import nav_event
 
 
@@ -16,3 +19,6 @@ def navbar_info(sender, request, **kwargs):
         }),
         'active': url.namespace == 'plugins:pretix_stretchgoals',
     }]
+
+
+settings_hierarkey.add_default('stretchgoals_public_text', '', LazyI18nString)
