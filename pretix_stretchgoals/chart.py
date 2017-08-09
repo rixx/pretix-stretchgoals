@@ -161,7 +161,7 @@ def get_chart_and_text(event):
     try:
         result['avg_now'] = data['avg_data']['data'][-1]['price']
         result['total_now'] = data['total_data']['data'][-1]['price']
-    except TypeError:  # no data, data[-1] does not exist
+    except (TypeError, IndexError):  # no data, data[-1] does not exist
         result['avg_now'] = 0
         result['total_now'] = 0
 
