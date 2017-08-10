@@ -12,7 +12,7 @@ from .json import ChartJSONEncoder
 from .utils import get_cache_key, get_goals
 
 
-def get_queryset(event, items, include_pending):
+def get_base_queryset(event, items, include_pending):
     qs = OrderPosition.objects.filter(order__event=event)
     allowed_states = ['p', 'n'] if include_pending else ['p']
     qs = qs.filter(order__status__in=allowed_states)
@@ -28,7 +28,7 @@ def get_start_date(event, items, include_pending):
     start_date = event.settings.get('stretchgoals_start_date', as_type=date)
     if start_date:
         return start_date
-    first_order = get_queryset(event, items, include_pending).first()
+    first_order = get_base_queryset(event, items, include_pending).first()
     if first_order:
         if include_pending:
             return first_order.order.datetime.astimezone(tz).date()
@@ -42,7 +42,7 @@ def get_end_date(event, items, include_pending):
     end_date = event.settings.get('stretchgoals_end_date', as_type=date)
     if end_date:
         return end_date
-    last_order = get_queryset(event, items, include_pending).last()
+    last_order = get_base_queryset(event, items, include_pending).last()
     if last_order:
         if include_pending:
             last_date = last_order.order.datetime.astimezone(tz).date()
@@ -65,12 +65,12 @@ def get_average_price(event, start_date, end_date, items, include_pending):
     start_dt = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz)
     end_dt = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, tzinfo=tz)
     if include_pending:
-        qs = get_queryset(event, items, include_pending).filter(
+        qs = get_base_queryset(event, items, include_pending).filter(
             order__datetime__gte=start_dt,
             order__datetime__lte=end_dt
         )
     else:
-        qs = get_queryset(event, items, include_pending).filter(
+        qs = get_base_queryset(event, items, include_pending).filter(
             order__payment_date__gte=start_dt,
             order__payment_date__lte=end_dt
         )
@@ -82,12 +82,12 @@ def get_total_price(event, start_date, end_date, items, include_pending):
     start_dt = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz)
     end_dt = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, tzinfo=tz)
     if include_pending:
-        qs = get_queryset(event, items, include_pending).filter(
+        qs = get_base_queryset(event, items, include_pending).filter(
             order__datetime__gte=start_dt,
             order__datetime__lte=end_dt
         )
     else:
-        qs = get_queryset(event, items, include_pending).filter(
+        qs = get_base_queryset(event, items, include_pending).filter(
             order__payment_date__gte=start_dt,
             order__payment_date__lte=end_dt
         )
@@ -103,12 +103,12 @@ def get_required_average_price(event, items, include_pending, target, total_coun
     start_dt = datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz)
     end_dt = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59, tzinfo=tz)
     if include_pending:
-        all_orders = get_queryset(event, items, include_pending).filter(
+        all_orders = get_base_queryset(event, items, include_pending).filter(
             order__datetime__gte=start_dt,
             order__datetime__lte=end_dt
         )
     else:
-        all_orders = get_queryset(event, items, include_pending).filter(
+        all_orders = get_base_queryset(event, items, include_pending).filter(
             order__payment_date__gte=start_dt,
             order__payment_date__lte=end_dt
         )
@@ -186,7 +186,7 @@ def get_chart_and_text(event):
     result['goals'] = goals
     result['significant'] = (
         not event.settings.stretchgoals_min_orders
-        or get_queryset(event, items, include_pending).count() >= event.settings.get('stretchgoals_min_orders', as_type=int)
+        or get_base_queryset(event, items, include_pending).count() >= event.settings.get('stretchgoals_min_orders', as_type=int)
     )
     result['public_text'] = get_public_text(event, items, include_pending, data=result)
     cache.set(cache_key, result, timeout=3600)
