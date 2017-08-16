@@ -32,9 +32,9 @@ def get_start_date(event, items, include_pending):
     if first_order:
         if include_pending:
             return first_order.order.datetime.astimezone(tz).date()
-        return first_order.order.payment_date.astimezone(tz).date()
-    else:
-        return (now() - timedelta(days=2)).astimezone(tz).date()
+        if first_order.order and first_order.order.payment_date:
+            return first_order.order.payment_date.astimezone(tz).date()
+    return (now() - timedelta(days=2)).astimezone(tz).date()
 
 
 def get_end_date(event, items, include_pending):
