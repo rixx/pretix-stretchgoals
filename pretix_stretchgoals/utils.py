@@ -25,4 +25,4 @@ def get_cache_key(event):
 
 
 def invalidate_cache(event):
-    event.get_cache().delete(get_cache_key(event))
+    event.cache.delete(get_cache_key(event))

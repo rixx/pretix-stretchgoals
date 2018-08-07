@@ -2,11 +2,11 @@ import json
 from datetime import date, timedelta, datetime
 
 import pytz
-from django.db.models import Avg, Sum
+from django.db.models import Avg, Sum, OuterRef, Max, Subquery, DateTimeField
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
 from i18nfield.strings import LazyI18nString
-from pretix.base.models import Item, OrderPosition
+from pretix.base.models import Item, OrderPosition, OrderPayment
 
 from .json import ChartJSONEncoder
 from .utils import get_cache_key, get_goals
@@ -15,12 +15,23 @@ from .utils import get_cache_key, get_goals
 def get_queryset(event, items, include_pending):
     qs = OrderPosition.objects.filter(order__event=event)
     allowed_states = ['p', 'n'] if include_pending else ['p']
-    qs = qs.filter(order__status__in=allowed_states)
+    op_date = OrderPayment.objects.filter(
+        order=OuterRef('order'),
+        state__in=(OrderPayment.PAYMENT_STATE_CONFIRMED, OrderPayment.PAYMENT_STATE_REFUNDED),
+        payment_date__isnull=False
+    ).order_by().values('order').annotate(
+        m=Max('payment_date')
+    ).values(
+        'm'
+    )
+    qs = qs.filter(order__status__in=allowed_states).annotate(
+        payment_date=Subquery(op_date, output_field=DateTimeField())
+    )
     if items:
         qs = qs.filter(item__in=items)
     if include_pending:
         return qs.order_by('order__datetime')
-    return qs.order_by('order__payment_date')
+    return qs.order_by('payment_date')
 
 
 def get_start_date(event, items, include_pending):
@@ -32,7 +43,7 @@ def get_start_date(event, items, include_pending):
     if first_order:
         if include_pending:
             return first_order.order.datetime.astimezone(tz).date()
-        return first_order.order.payment_date.astimezone(tz).date()
+        return first_order.payment_date.astimezone(tz).date()
     else:
         return (now() - timedelta(days=2)).astimezone(tz).date()
 
@@ -47,7 +58,7 @@ def get_end_date(event, items, include_pending):
         if include_pending:
             last_date = last_order.order.datetime.astimezone(tz).date()
         else:
-            last_date = last_order.order.payment_date.astimezone(tz).date()
+            last_date = last_order.payment_date.astimezone(tz).date()
         if last_date == now().astimezone(tz).date():
             last_date -= timedelta(days=1)
     else:
@@ -71,8 +82,8 @@ def get_average_price(event, start_date, end_date, items, include_pending):
         )
     else:
         qs = get_queryset(event, items, include_pending).filter(
-            order__payment_date__gte=start_dt,
-            order__payment_date__lte=end_dt
+            payment_date__gte=start_dt,
+            payment_date__lte=end_dt
         )
     return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
 
@@ -88,8 +99,8 @@ def get_total_price(event, start_date, end_date, items, include_pending):
         )
     else:
         qs = get_queryset(event, items, include_pending).filter(
-            order__payment_date__gte=start_dt,
-            order__payment_date__lte=end_dt
+            payment_date__gte=start_dt,
+            payment_date__lte=end_dt
         )
     return round(qs.aggregate(Sum('price')).get('price__sum') or 0, 2)
 
@@ -109,8 +120,8 @@ def get_required_average_price(event, items, include_pending, target, total_coun
         )
     else:
         all_orders = get_queryset(event, items, include_pending).filter(
-            order__payment_date__gte=start_dt,
-            order__payment_date__lte=end_dt
+            payment_date__gte=start_dt,
+            payment_date__lte=end_dt
         )
     current_count = all_orders.count()
 
@@ -133,7 +144,7 @@ def get_public_text(event, items, include_pending, data=None):
 
 
 def get_chart_and_text(event):
-    cache = event.get_cache()
+    cache = event.cache
     cache_key = get_cache_key(event)
     chart_data = cache.get(cache_key)
     if chart_data:
