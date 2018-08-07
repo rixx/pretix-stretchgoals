@@ -40,7 +40,17 @@
     </div>
 
     {% if request.event.settings.stretchgoals_goals %}
-        {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}
-        {% include "pretixplugins/stretchgoals/chart.html" with data=data.avg_data label="avg" %}
+        {% if significant %}
+            {% if request.event.settings.stretchgoals_chart_totals %}
+                {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}
+            {% endif %}
+            {% if request.event.settings.stretchgoals_chart_averages %}
+                {% include "pretixplugins/stretchgoals/chart.html" with data=data.avg_data label="avg" %}
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info">
+                {% trans "There is not enough data available yet do provide meaningful statistics. Please check back later!" %}
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
