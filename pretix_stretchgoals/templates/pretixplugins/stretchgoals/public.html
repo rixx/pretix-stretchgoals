@@ -9,7 +9,9 @@
     {% block custom_header %}
         <script type="text/javascript" src="{% static "charts/raphael-min.js" %}"></script>
         <script type="text/javascript" src="{% static "charts/morris.js" %}"></script>
-        <link rel="stylesheet" href="{% static "charts/morris.css" %}" type="text/css" />
+        {% compress css %}
+            <link rel="stylesheet" href="{% static "charts/morris.scss" %}" type="text/x-scss"/>
+        {% endcompress %}
     {% endblock %}
 
     {% block title %}{% trans "Presale Goals" %} :: {{ event.name }}{% endblock %}
