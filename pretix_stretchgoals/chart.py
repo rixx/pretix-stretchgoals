@@ -183,9 +183,9 @@ def get_chart_and_text(event):
         },
     }
     if avg_chart:
-        data['avg_chart']['ymin'] = int(min([d['price'] for d in data['avg_data']['data']]))
+        data['avg_data']['ymin'] = int(min([d['price'] for d in data['avg_data']['data']] or [0]))
     if total_chart:
-        data['total_data']['ymin'] = int(min([d['price'] for d in data['total_data']['data']]))
+        data['total_data']['ymin'] = int(min([d['price'] for d in data['total_data']['data']] or [0]))
     result['data'] = {key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()}
     try:
         result['avg_now'] = data['avg_data']['data'][-1]['price']
