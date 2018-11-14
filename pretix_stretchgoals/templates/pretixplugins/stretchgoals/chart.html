@@ -35,7 +35,7 @@
             xkey: 'date',
             ykeys: ['price'],
             labels: [gettext({% if label == 'avg' %}'Average price'{% elif label == 'total' %}'Total revenue'{% else %}''{% endif %})],
-            ymin: {{ data.ymin|default_if_none:"auto" }},
+            ymin: data.ymin || "auto",
             postUnits: ' €',
             smooth: false,
             resize: true,
