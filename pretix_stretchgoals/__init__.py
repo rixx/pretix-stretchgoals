@@ -1,14 +1,15 @@
 from django.apps import AppConfig
+from django.utils.translation import ugettext_lazy
 
 
 class PluginApp(AppConfig):
     name = 'pretix_stretchgoals'
-    verbose_name = 'A pretix plugin to chart average prices over time'
+    verbose_name = ugettext_lazy('Chart the average price of tickets sold over time, and optionally display them publicly.')
 
     class PretixPluginMeta:
-        name = 'Chart average prices over time'
+        name = ugettext_lazy('Stretchgoals')
         author = 'Tobias Kunze'
-        description = 'Chart the average price of tickets sold over time, and optionally display them publicly.'
+        description = ugettext_lazy('Chart the average price of tickets sold over time, and optionally display them publicly.')
         visible = True
         version = '0.0.1'
 
