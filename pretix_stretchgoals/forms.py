@@ -7,6 +7,7 @@ from i18nfield.forms import (
     I18nForm, I18nFormField, I18nTextarea, I18nTextInput,
 )
 from pretix.base.forms import SettingsForm
+from pretix.base.forms.widgets import DatePickerWidget
 from pretix.base.models import Item
 
 from .utils import get_goals, set_goals
@@ -17,11 +18,13 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
     stretchgoals_start_date = forms.DateField(
         required=False,
         label=_('Start date'),
+        widget=DatePickerWidget(),
         help_text=_('Will start at first sale by default.')
     )
     stretchgoals_end_date = forms.DateField(
         required=False,
         label=_('End date'),
+        widget=DatePickerWidget(),
         help_text=_('Will end at last sale by default.')
     )
     stretchgoals_items = forms.ModelMultipleChoiceField(
