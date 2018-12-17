@@ -49,7 +49,7 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
     stretchgoals_new_total = forms.IntegerField(
         required=False,
         min_value=0,
-        label=_('New goal')
+        label=_('New total revenue goal')
     )
     stretchgoals_new_amount = forms.IntegerField(
         required=False,
@@ -90,7 +90,7 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
     )
     stretchgoals_public_text = I18nFormField(
         required=False,
-        label=_('Text shown on the public page.'),
+        label=_('Text shown on the public page'),
         help_text=_('Text shown on the public page. You can use the placeholder '
                     '{avg_now} (the current average).'),
         widget=I18nTextarea
