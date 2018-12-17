@@ -1,13 +1,15 @@
 {% extends "pretixcontrol/event/base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load money %}
 
 {% block title %} {% trans "Stretch Goal Settings" %} {% endblock %}
 
 {% block content %}
     <h1>
         {% trans "Stretch Goal Settings" %}
-        <small><a href="{% url "plugins:pretix_stretchgoals:control" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Back" %}</a></small>
+        <small><a href="{% url "plugins:pretix_stretchgoals:control" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Back" %}</a>
+        </small>
     </h1>
 
     <form action="" method="post" class="form-horizontal">
@@ -24,12 +26,14 @@
             {% endblocktrans %}
             <p>
         </div>
-        <div class="col-md-12"><fieldset>
-            {% bootstrap_field form.stretchgoals_start_date layout="control" %}
-            {% bootstrap_field form.stretchgoals_end_date layout="control" %}
-            {% bootstrap_field form.stretchgoals_items layout="control" %}
-            {% bootstrap_field form.stretchgoals_include_pending layout="control" %}
-        </fieldset></div>
+        <div class="col-md-12">
+            <fieldset>
+                {% bootstrap_field form.stretchgoals_start_date layout="control" %}
+                {% bootstrap_field form.stretchgoals_end_date layout="control" %}
+                {% bootstrap_field form.stretchgoals_items layout="control" %}
+                {% bootstrap_field form.stretchgoals_include_pending layout="control" %}
+            </fieldset>
+        </div>
 
         <legend>{% trans "Goals" %}</legend>
         <div class="col-md-3"></div>
@@ -42,27 +46,45 @@
             {% endblocktrans %}
             <p>
         </div>
-        <label class="col-md-3 control-label">{% trans "Current goals" %}</label>
-        <div class="col-md-9">
-            <ul>
-            {% for goal in form.goals %}
-                <li>
-                    "{{ goal.name }}": {{ goal.total }}
-                    {% if goal.amount %}({{ goal.amount }} {% trans "items" %}){% endif %}
-                    <a href="?delete={{ forloop.counter }}" class="btn btn-xs btn-danger">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
-                </li>
-            {% endfor %}
-            </ul>
-            <p>
+        {% if form.goals %}
+            <label class="col-md-3 control-label">{% trans "Current goals" %}</label>
+            <div class="col-md-9">
+                <ul>
+                    {% for goal in form.goals %}
+                        <li>
+                            "{{ goal.name }}": {{ goal.total|money:request.event.currency }}
+                            {% if goal.amount %}({{ goal.amount }} {% trans "items" %}){% endif %}
+                            <a href="?delete={{ forloop.counter }}" class="btn btn-xs btn-danger">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <p>
+            </div>
+        {% endif %}
+        <div class="col-md-12">
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">&nbsp;</label>
+                    <div class="col-md-9">
+                        <div class="checkbox">
+                            <label for="id_add_stretchgoal">
+                                <input type="checkbox" name="add_stretchgoal" value="on"
+                                       class="" id="id_add_stretchgoal" {% if not form.goals or "add_stretchgoal" in request.POST %}checked=""{% endif %}>
+                                    {% trans "Add a new goal" %}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div data-display-dependency="#id_add_stretchgoal">
+                    {% bootstrap_field form.stretchgoals_new_name layout="control" %}
+                    {% bootstrap_field form.stretchgoals_new_total layout="control" %}
+                    {% bootstrap_field form.stretchgoals_new_amount layout="control" %}
+                    {% bootstrap_field form.stretchgoals_new_description layout="control" %}
+                </div>
+            </fieldset>
         </div>
-        <div class="col-md-12"><fieldset>
-            {% bootstrap_field form.stretchgoals_new_name layout="control" %}
-            {% bootstrap_field form.stretchgoals_new_total layout="control" %}
-            {% bootstrap_field form.stretchgoals_new_amount layout="control" %}
-            {% bootstrap_field form.stretchgoals_new_description layout="control" %}
-        </fieldset></div>
 
         <legend>{% trans "Display" %}</legend>
         <div class="col-md-3"></div>
@@ -73,21 +95,23 @@
             {% endblocktrans %}
             <p>
         </div>
-        <div class="col-md-12"><fieldset>
-            {% bootstrap_field form.stretchgoals_is_public layout="control" %}
-            {% bootstrap_field form.stretchgoals_chart_averages layout="control" %}
-            {% bootstrap_field form.stretchgoals_chart_totals layout="control" %}
-            {% bootstrap_field form.stretchgoals_calculation_text layout="control" %}
-            {% bootstrap_field form.stretchgoals_min_orders layout="control" %}
-            {% bootstrap_field form.stretchgoals_public_text layout="control" %}
-        </fieldset></div>
-    </div>
+        <div class="col-md-12">
+            <fieldset>
+                {% bootstrap_field form.stretchgoals_is_public layout="control" %}
+                {% bootstrap_field form.stretchgoals_chart_averages layout="control" %}
+                {% bootstrap_field form.stretchgoals_chart_totals layout="control" %}
+                {% bootstrap_field form.stretchgoals_calculation_text layout="control" %}
+                {% bootstrap_field form.stretchgoals_min_orders layout="control" %}
+                {% bootstrap_field form.stretchgoals_public_text layout="control" %}
+            </fieldset>
+        </div>
+        </div>
 
-    <div class="form-group submit-group">
-        <button type="submit" class="btn btn-primary btn-save">
-            {% trans "Save" %}
-        </button>
-    </div>
+        <div class="form-group submit-group">
+            <button type="submit" class="btn btn-primary btn-save">
+                {% trans "Save" %}
+            </button>
+        </div>
     </form>
 
 {% endblock %}
