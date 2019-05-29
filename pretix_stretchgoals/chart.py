@@ -59,7 +59,7 @@ def get_end_date(event, items, include_pending):
             last_date = last_order.order.datetime.astimezone(tz).date()
         else:
             last_date = last_order.payment_date.astimezone(tz).date()
-        if last_date == now().astimezone(tz).date():
+        if last_date == now().astimezone(tz).date() and event.settings.stretchgoals_is_public:
             last_date -= timedelta(days=1)
     else:
         last_date = (now() - timedelta(days=1)).astimezone(tz).date()
