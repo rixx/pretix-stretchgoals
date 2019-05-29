@@ -60,13 +60,11 @@ def get_end_date(event, items, include_pending):
         else:
             last_date = last_order.payment_date.astimezone(tz).date()
         if last_date == now().astimezone(tz).date() and event.settings.stretchgoals_is_public:
-            last_date -= timedelta(days=1)
-    else:
-        if event.settings.stretchgoals_is_public:
-            last_date = (now() - timedelta(days=1)).astimezone(tz).date()
-        else:
-            last_date = now().astimezone(tz).date()
-    return last_date
+            return last_date - timedelta(days=1)
+        return last_date
+    if event.settings.stretchgoals_is_public:
+        return (now() - timedelta(days=1)).astimezone(tz).date()
+    return now().astimezone(tz).date()
 
 
 def get_date_range(start_date, end_date):
