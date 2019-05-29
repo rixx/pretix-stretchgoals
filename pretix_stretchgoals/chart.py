@@ -62,7 +62,10 @@ def get_end_date(event, items, include_pending):
         if last_date == now().astimezone(tz).date() and event.settings.stretchgoals_is_public:
             last_date -= timedelta(days=1)
     else:
-        last_date = (now() - timedelta(days=1)).astimezone(tz).date()
+        if event.settings.stretchgoals_is_public:
+            last_date = (now() - timedelta(days=1)).astimezone(tz).date()
+        else:
+            last_date = now().astimezone(tz).date()
     return last_date
 
 
