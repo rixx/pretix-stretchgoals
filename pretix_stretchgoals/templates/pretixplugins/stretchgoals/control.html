@@ -40,6 +40,7 @@
     </div>
 
     {% if request.event.settings.stretchgoals_goals %}
+    <p>{% trans "Last generated:" %} {{ last_generated }}</p>
         {% if significant %}
             {% if request.event.settings.stretchgoals_chart_totals %}
                 {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}

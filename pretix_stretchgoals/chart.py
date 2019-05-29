@@ -204,5 +204,6 @@ def get_chart_and_text(event):
         or get_base_queryset(event, items, include_pending).count() >= event.settings.get('stretchgoals_min_orders', as_type=int)
     )
     result['public_text'] = get_public_text(event, items, include_pending, data=result)
-    cache.set(cache_key, result, timeout=3600)
+    result['last_generated'] = now()
+    cache.set(cache_key, result, timeout=3600)  # timeout is set in seconds, so it's hourly
     return result
