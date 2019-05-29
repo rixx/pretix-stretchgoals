@@ -1,6 +1,6 @@
-from django.urls import reverse
 from django.http import Http404
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from pretix.control.views.event import EventSettingsFormView
@@ -12,10 +12,11 @@ from .utils import get_goals, invalidate_cache, set_goals
 
 
 class ChartMixin:
-
     def get(self, request, *args, **kwargs):
         resp = super().get(request, *args, **kwargs)
-        resp['Content-Security-Policy'] = "script-src 'unsafe-eval' 'unsafe-inline'; style-src 'unsafe-inline'"
+        resp[
+            'Content-Security-Policy'
+        ] = "script-src 'unsafe-eval' 'unsafe-inline'; style-src 'unsafe-inline'"
         return resp
 
     def get_context_data(self, *args, **kwargs):
@@ -31,10 +32,15 @@ class ControlView(ChartMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if 'refresh' in request.GET:
             invalidate_cache(request.event)
-            return redirect(reverse('plugins:pretix_stretchgoals:control', kwargs={
-                'organizer': request.event.organizer.slug,
-                'event': request.event.slug,
-            }))
+            return redirect(
+                reverse(
+                    'plugins:pretix_stretchgoals:control',
+                    kwargs={
+                        'organizer': request.event.organizer.slug,
+                        'event': request.event.slug,
+                    },
+                )
+            )
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -67,7 +73,10 @@ class SettingsView(EventSettingsFormView):
         return kwargs
 
     def get_success_url(self, **kwargs):
-        return reverse('plugins:pretix_stretchgoals:settings', kwargs={
-            'organizer': self.request.event.organizer.slug,
-            'event': self.request.event.slug,
-        })
+        return reverse(
+            'plugins:pretix_stretchgoals:settings',
+            kwargs={
+                'organizer': self.request.event.organizer.slug,
+                'event': self.request.event.slug,
+            },
+        )
