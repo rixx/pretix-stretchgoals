@@ -3,6 +3,7 @@ import json
 from django import forms
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
+from django_scopes.forms import SafeModelMultipleChoiceField
 from i18nfield.forms import (
     I18nForm, I18nFormField, I18nTextarea, I18nTextInput,
 )
@@ -27,8 +28,8 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         widget=DatePickerWidget(),
         help_text=_('Will end at last sale by default.'),
     )
-    stretchgoals_items = forms.ModelMultipleChoiceField(
-        queryset=Item.objects.all(),
+    stretchgoals_items = SafeModelMultipleChoiceField(
+        queryset=Item.objects.none(),
         required=False,
         label=_('Item types'),
         help_text=_('Items to be included in the calculation.'),
