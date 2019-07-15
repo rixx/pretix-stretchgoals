@@ -132,10 +132,6 @@ class StretchgoalsSettingsForm(I18nForm, SettingsForm):
         self.event.settings._h.add_type(
             QuerySet,
             lambda queryset: ','.join([str(element.pk) for element in queryset]),
-            lambda pk_list: [
-                Item.objects.get(pk=element)
-                for element in pk_list.split(',')
-                if element
-            ],
+            lambda pk_list: Item.objects.filter(pk__in=pk_list.split(','))
         )
         super().save(*args, **kwargs)
