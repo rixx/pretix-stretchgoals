@@ -172,9 +172,7 @@ def get_chart_and_text(event):
     event.settings._h.add_type(
         QuerySet,
         lambda queryset: ','.join([str(element.pk) for element in queryset]),
-        lambda pk_list: [
-            Item.objects.get(pk=element) for element in pk_list.split(',') if element
-        ],
+        lambda pk_list: Item.objects.filter(pk__in=pk_list.split(','))
     )
     items = event.settings.get('stretchgoals_items', as_type=QuerySet) or []
 
