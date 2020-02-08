@@ -10,6 +10,7 @@ class PluginApp(AppConfig):
 
     class PretixPluginMeta:
         name = ugettext_lazy('Stretchgoals')
+        category = 'FEATURE'
         author = 'Tobias Kunze'
         description = ugettext_lazy(
             'Chart the average price of tickets sold over time, and optionally display them publicly.'
