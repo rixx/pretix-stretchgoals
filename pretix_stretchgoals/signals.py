@@ -1,7 +1,7 @@
 from django.db.models import QuerySet
 from django.dispatch import receiver
 from django.urls import resolve, reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from i18nfield.strings import LazyI18nString
 from pretix.base.models import Item
 from pretix.base.settings import settings_hierarkey

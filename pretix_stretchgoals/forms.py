@@ -2,7 +2,7 @@ import json
 
 from django import forms
 from django.db.models.query import QuerySet
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_scopes.forms import SafeModelMultipleChoiceField
 from i18nfield.forms import (
     I18nForm, I18nFormField, I18nTextarea, I18nTextInput,
