@@ -35,6 +35,7 @@
             xkey: 'date',
             ykeys: ['price'],
             labels: [gettext({% if label == 'avg' %}'Average price'{% elif label == 'total' %}'Total revenue'{% else %}''{% endif %})],
+            yLabelFormat: function (x) { return x.toFixed(2) },
             ymin: data.ymin || "auto",
             postUnits: ' €',
             smooth: false,
