@@ -33,7 +33,7 @@ def event_copy_data_receiver(sender, other, item_map, **kwargs):
     other.settings._h.add_type(
         QuerySet,
         lambda queryset: ','.join([str(element.pk) for element in queryset]),
-        lambda pk_list: Item.objects.filter(pk__in=pk_list.split(','))
+        lambda pk_list: Item.objects.filter(pk__in=pk_list.split(',') if pk_list else [])
     )
     initial_items = other.settings.get('stretchgoals_items', as_type=QuerySet) or []
     if isinstance(initial_items, str) and initial_items:
