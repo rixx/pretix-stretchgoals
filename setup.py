@@ -3,7 +3,7 @@ from distutils.command.build import build
 
 from django.core import management
 from setuptools import find_packages, setup
-from pretix_stretchgoals import version
+from pretix_stretchgoals import __version__
 
 try:
     with open(os.path.join(os.path.dirname(__file__), 'README.rst'), encoding='utf-8') as f:
