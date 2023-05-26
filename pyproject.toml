@@ -8,7 +8,7 @@ license = {file = "LICENSE"}
 keywords = ["pretix"]
 authors = [
     {name = "Tobias Kunze", email = "rixx@cutebit.de"},
-]a
+]
 maintainers = [
     {name = "Tobias Kunze", email = "rixx@cutebit.de"},
 ]
