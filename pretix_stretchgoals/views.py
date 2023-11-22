@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+from pretix.control.permissions import EventPermissionRequiredMixin
 from pretix.control.views.event import EventSettingsFormView
 from pretix.presale.utils import event_view
 
@@ -26,8 +27,9 @@ class ChartMixin:
         return ctx
 
 
-class ControlView(ChartMixin, TemplateView):
+class ControlView(ChartMixin, EventPermissionRequiredMixin, TemplateView):
     template_name = 'pretixplugins/stretchgoals/control.html'
+    permission = 'can_change_event_settings'
 
     def dispatch(self, request, *args, **kwargs):
         if 'refresh' in request.GET:

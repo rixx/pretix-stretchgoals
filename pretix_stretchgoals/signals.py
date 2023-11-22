@@ -11,6 +11,10 @@ from pretix.control.signals import nav_event
 
 @receiver(nav_event, dispatch_uid='stretchgoals_nav')
 def navbar_info(sender, request, **kwargs):
+    if not request.user.has_event_permission(
+        request.organizer, request.event, "can_change_event_settings"
+    ):
+        return []
     url = resolve(request.path_info)
     return [
         {
