@@ -7,10 +7,10 @@ requires-python = ">=3.9"
 license = {file = "LICENSE"}
 keywords = ["pretix"]
 authors = [
-    {name = "Tobias Kunze", email = "rixx@cutebit.de"},
+    {name = "Tobias Kunze", email = "r@rixx.de"},
 ]
 maintainers = [
-    {name = "Tobias Kunze", email = "rixx@cutebit.de"},
+    {name = "Tobias Kunze", email = "r@rixx.de"},
 ]
 
 dependencies = [
