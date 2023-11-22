@@ -1,7 +1,6 @@
 import json
-from datetime import date, datetime, timedelta
-
 import pytz
+from datetime import date, datetime, timedelta
 from django.db.models import Avg, DateTimeField, Max, OuterRef, Subquery, Sum
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
@@ -14,10 +13,10 @@ from .utils import get_cache_key, get_goals
 
 def get_base_queryset(event, items, include_pending):
     qs = OrderPosition.objects.filter(order__event=event)
-    allowed_states = ['p', 'n'] if include_pending else ['p']
+    allowed_states = ["p", "n"] if include_pending else ["p"]
     op_date = (
         OrderPayment.objects.filter(
-            order=OuterRef('order'),
+            order=OuterRef("order"),
             state__in=(
                 OrderPayment.PAYMENT_STATE_CONFIRMED,
                 OrderPayment.PAYMENT_STATE_REFUNDED,
@@ -25,9 +24,9 @@ def get_base_queryset(event, items, include_pending):
             payment_date__isnull=False,
         )
         .order_by()
-        .values('order')
-        .annotate(m=Max('payment_date'))
-        .values('m')
+        .values("order")
+        .annotate(m=Max("payment_date"))
+        .values("m")
     )
     qs = qs.filter(order__status__in=allowed_states).annotate(
         payment_date=Subquery(op_date, output_field=DateTimeField())
@@ -35,13 +34,13 @@ def get_base_queryset(event, items, include_pending):
     if items:
         qs = qs.filter(item__in=items)
     if include_pending:
-        return qs.order_by('order__datetime')
-    return qs.order_by('payment_date')
+        return qs.order_by("order__datetime")
+    return qs.order_by("payment_date")
 
 
 def get_start_date(event, items, include_pending):
     tz = pytz.timezone(event.settings.timezone)
-    start_date = event.settings.get('stretchgoals_start_date', as_type=date)
+    start_date = event.settings.get("stretchgoals_start_date", as_type=date)
     if start_date:
         return start_date
     first_order = get_base_queryset(event, items, include_pending).first()
@@ -55,7 +54,7 @@ def get_start_date(event, items, include_pending):
 
 def get_end_date(event, items, include_pending):
     tz = pytz.timezone(event.settings.timezone)
-    end_date = event.settings.get('stretchgoals_end_date', as_type=date)
+    end_date = event.settings.get("stretchgoals_end_date", as_type=date)
     if end_date:
         return end_date
     last_order = get_base_queryset(event, items, include_pending).last()
@@ -96,7 +95,7 @@ def get_average_price(event, start_date, end_date, items, include_pending):
         qs = get_base_queryset(event, items, include_pending).filter(
             payment_date__gte=start_dt, payment_date__lte=end_dt
         )
-    return round(qs.aggregate(Avg('price')).get('price__avg') or 0, 2)
+    return round(qs.aggregate(Avg("price")).get("price__avg") or 0, 2)
 
 
 def get_total_price(event, start_date, end_date, items, include_pending):
@@ -115,7 +114,7 @@ def get_total_price(event, start_date, end_date, items, include_pending):
         qs = get_base_queryset(event, items, include_pending).filter(
             payment_date__gte=start_dt, payment_date__lte=end_dt
         )
-    return round(qs.aggregate(Sum('price')).get('price__sum') or 0, 2)
+    return round(qs.aggregate(Sum("price")).get("price__sum") or 0, 2)
 
 
 def get_required_average_price(
@@ -152,9 +151,9 @@ def get_required_average_price(
 
 
 def get_public_text(event, items, include_pending, data=None):
-    text = str(event.settings.get('stretchgoals_public_text', as_type=LazyI18nString))
+    text = str(event.settings.get("stretchgoals_public_text", as_type=LazyI18nString))
     if data:
-        text = text.format(**{'avg_now': data['avg_now']})
+        text = text.format(**{"avg_now": data["avg_now"]})
     return text
 
 
@@ -171,20 +170,22 @@ def get_chart_and_text(event):
     total_chart = event.settings.stretchgoals_chart_totals or False
     event.settings._h.add_type(
         QuerySet,
-        lambda queryset: ','.join([str(element.pk) for element in queryset]),
-        lambda pk_list: Item.objects.filter(pk__in=pk_list.split(',')) if pk_list else []
+        lambda queryset: ",".join([str(element.pk) for element in queryset]),
+        lambda pk_list: Item.objects.filter(pk__in=pk_list.split(","))
+        if pk_list
+        else [],
     )
-    items = event.settings.get('stretchgoals_items', as_type=QuerySet) or []
+    items = event.settings.get("stretchgoals_items", as_type=QuerySet) or []
 
     start_date = get_start_date(event, items, include_pending)
     end_date = get_end_date(event, items, include_pending)
     goals = get_goals(event)
     data = {
-        'avg_data': {
-            'data': [
+        "avg_data": {
+            "data": [
                 {
-                    'date': date.strftime('%Y-%m-%d'),
-                    'price': get_average_price(
+                    "date": date.strftime("%Y-%m-%d"),
+                    "price": get_average_price(
                         event, start_date, date, items, include_pending
                     )
                     or 0,
@@ -193,14 +194,14 @@ def get_chart_and_text(event):
             ]
             if avg_chart
             else None,
-            'target': [goal.get('avg', 0) for goal in goals],
-            'label': 'avg',
+            "target": [goal.get("avg", 0) for goal in goals],
+            "label": "avg",
         },
-        'total_data': {
-            'data': [
+        "total_data": {
+            "data": [
                 {
-                    'date': date.strftime('%Y-%m-%d'),
-                    'price': get_total_price(
+                    "date": date.strftime("%Y-%m-%d"),
+                    "price": get_total_price(
                         event, start_date, date, items, include_pending
                     )
                     or 0,
@@ -209,49 +210,49 @@ def get_chart_and_text(event):
             ]
             if total_chart
             else None,
-            'target': [goal['total'] for goal in goals],
-            'label': 'total',
+            "target": [goal["total"] for goal in goals],
+            "label": "total",
         },
     }
     if avg_chart:
-        data['avg_data']['ymin'] = int(
-            min([d['price'] for d in data['avg_data']['data'] if d['price']] or [0])
+        data["avg_data"]["ymin"] = int(
+            min([d["price"] for d in data["avg_data"]["data"] if d["price"]] or [0])
         )
     if total_chart:
-        data['total_data']['ymin'] = int(
-            min([d['price'] for d in data['total_data']['data'] if d['price']] or [0])
+        data["total_data"]["ymin"] = int(
+            min([d["price"] for d in data["total_data"]["data"] if d["price"]] or [0])
         )
-    result['data'] = {
+    result["data"] = {
         key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()
     }
     try:
-        result['avg_now'] = data['avg_data']['data'][-1]['price']
-        result['total_now'] = data['total_data']['data'][-1]['price']
+        result["avg_now"] = data["avg_data"]["data"][-1]["price"]
+        result["total_now"] = data["total_data"]["data"][-1]["price"]
     except (TypeError, IndexError):  # no data, data[-1] does not exist
-        result['avg_now'] = 0
-        result['total_now'] = 0
+        result["avg_now"] = 0
+        result["total_now"] = 0
 
     for goal in goals:
-        goal['avg_required'] = get_required_average_price(
+        goal["avg_required"] = get_required_average_price(
             event,
             items,
             include_pending,
-            goal['total'],
-            goal['amount'],
-            result['total_now'],
+            goal["total"],
+            goal["amount"],
+            result["total_now"],
         )
-        goal['total_left'] = goal['total'] - result['total_now']
+        goal["total_left"] = goal["total"] - result["total_now"]
 
-    result['goals'] = goals
+    result["goals"] = goals
     result[
-        'significant'
+        "significant"
     ] = not event.settings.stretchgoals_min_orders or get_base_queryset(
         event, items, include_pending
     ).count() >= event.settings.get(
-        'stretchgoals_min_orders', as_type=int
+        "stretchgoals_min_orders", as_type=int
     )
-    result['public_text'] = get_public_text(event, items, include_pending, data=result)
-    result['last_generated'] = now()
+    result["public_text"] = get_public_text(event, items, include_pending, data=result)
+    result["last_generated"] = now()
     cache.set(
         cache_key, result, timeout=3600
     )  # timeout is set in seconds, so it's hourly

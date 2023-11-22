@@ -34,24 +34,24 @@
             with pretix' "free price input" feature, which allows you to set a minimum price, but
             lets every customer choose how much they want to give additionally.
         {% endblocktrans %}<p>
-        {% blocktrans trimmed %}
-            You can also keep your goals private, and use this page to check your progress.
-        {% endblocktrans %}
-    </div>
+            {% blocktrans trimmed %}
+                You can also keep your goals private, and use this page to check your progress.
+            {% endblocktrans %}
+        </div>
 
-    {% if request.event.settings.stretchgoals_goals %}
-    <p>{% trans "Last generated:" %} {{ last_generated }}</p>
-        {% if significant %}
-            {% if request.event.settings.stretchgoals_chart_totals %}
-                {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}
+        {% if request.event.settings.stretchgoals_goals %}
+            <p>{% trans "Last generated:" %} {{ last_generated }}</p>
+            {% if significant %}
+                {% if request.event.settings.stretchgoals_chart_totals %}
+                    {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}
+                {% endif %}
+                {% if request.event.settings.stretchgoals_chart_averages %}
+                    {% include "pretixplugins/stretchgoals/chart.html" with data=data.avg_data label="avg" %}
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    {% trans "There is not enough data available yet do provide meaningful statistics. Please check back later!" %}
+                </div>
             {% endif %}
-            {% if request.event.settings.stretchgoals_chart_averages %}
-                {% include "pretixplugins/stretchgoals/chart.html" with data=data.avg_data label="avg" %}
-            {% endif %}
-        {% else %}
-            <div class="alert alert-info">
-                {% trans "There is not enough data available yet do provide meaningful statistics. Please check back later!" %}
-            </div>
         {% endif %}
-    {% endif %}
 {% endblock %}

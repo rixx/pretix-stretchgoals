@@ -16,7 +16,7 @@ class ChartMixin:
     def get(self, request, *args, **kwargs):
         resp = super().get(request, *args, **kwargs)
         resp[
-            'Content-Security-Policy'
+            "Content-Security-Policy"
         ] = "script-src 'unsafe-eval' 'unsafe-inline'; style-src 'unsafe-inline'"
         return resp
 
@@ -28,27 +28,27 @@ class ChartMixin:
 
 
 class ControlView(ChartMixin, EventPermissionRequiredMixin, TemplateView):
-    template_name = 'pretixplugins/stretchgoals/control.html'
-    permission = 'can_change_event_settings'
+    template_name = "pretixplugins/stretchgoals/control.html"
+    permission = "can_change_event_settings"
 
     def dispatch(self, request, *args, **kwargs):
-        if 'refresh' in request.GET:
+        if "refresh" in request.GET:
             invalidate_cache(request.event)
             return redirect(
                 reverse(
-                    'plugins:pretix_stretchgoals:control',
+                    "plugins:pretix_stretchgoals:control",
                     kwargs={
-                        'organizer': request.event.organizer.slug,
-                        'event': request.event.slug,
+                        "organizer": request.event.organizer.slug,
+                        "event": request.event.slug,
                     },
                 )
             )
         return super().dispatch(request, *args, **kwargs)
 
 
-@method_decorator(event_view, name='dispatch')
+@method_decorator(event_view, name="dispatch")
 class PublicView(ChartMixin, TemplateView):
-    template_name = 'pretixplugins/stretchgoals/public.html'
+    template_name = "pretixplugins/stretchgoals/public.html"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.event.settings.stretchgoals_is_public:
@@ -58,12 +58,12 @@ class PublicView(ChartMixin, TemplateView):
 
 class SettingsView(EventSettingsFormView):
     form_class = StretchgoalsSettingsForm
-    template_name = 'pretixplugins/stretchgoals/settings.html'
+    template_name = "pretixplugins/stretchgoals/settings.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if 'delete' in request.GET:
+        if "delete" in request.GET:
             goals = get_goals(request.event)
-            index = int(request.GET.get('delete', 1)) - 1
+            index = int(request.GET.get("delete", 1)) - 1
             goals.pop(index)
             set_goals(request.event, goals)
             return redirect(self.get_success_url())
@@ -71,14 +71,14 @@ class SettingsView(EventSettingsFormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['event'] = self.request.event
+        kwargs["event"] = self.request.event
         return kwargs
 
     def get_success_url(self, **kwargs):
         return reverse(
-            'plugins:pretix_stretchgoals:settings',
+            "plugins:pretix_stretchgoals:settings",
             kwargs={
-                'organizer': self.request.event.organizer.slug,
-                'event': self.request.event.slug,
+                "organizer": self.request.event.organizer.slug,
+                "event": self.request.event.slug,
             },
         )

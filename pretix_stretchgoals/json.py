@@ -1,5 +1,4 @@
 import decimal
-
 from django.core.serializers.json import DjangoJSONEncoder
 
 

@@ -35,7 +35,7 @@
                                     {% endblocktrans %}
                                 {% else %}
                                     {% blocktrans trimmed with total=goal.total left=goal.total_left name=goal.name %}
-                                    To reach goal "{{ name }}" of {{ total }} €, the remaining tickets need to sell for a total of {{ left }} €.
+                                        To reach goal "{{ name }}" of {{ total }} €, the remaining tickets need to sell for a total of {{ left }} €.
                                     {% endblocktrans %}
                                 {% endif %}
                             </li>
@@ -56,7 +56,7 @@
                                     {% endblocktrans %}
                                 {% else %}
                                     {% blocktrans trimmed with total=goal.avg name=goal.name required=goal.avg_required %}
-                                    To reach goal "{{ name }}" of {{ total }} € average sales price, the remaining tickets need to sell at an average of {{ required }} €.
+                                        To reach goal "{{ name }}" of {{ total }} € average sales price, the remaining tickets need to sell at an average of {{ required }} €.
                                     {% endblocktrans %}
                                 {% endif %}
                             </li>
