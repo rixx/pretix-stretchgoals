@@ -164,7 +164,6 @@ def get_chart_and_text(event):
     if chart_data:
         return chart_data
 
-    result = {}
     include_pending = event.settings.stretchgoals_include_pending or False
     avg_chart = event.settings.stretchgoals_chart_averages or False
     total_chart = event.settings.stretchgoals_chart_totals or False
@@ -222,15 +221,23 @@ def get_chart_and_text(event):
         data["total_data"]["ymin"] = int(
             min([d["price"] for d in data["total_data"]["data"] if d["price"]] or [0])
         )
-    result["data"] = {
-        key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()
-    }
     try:
-        result["avg_now"] = data["avg_data"]["data"][-1]["price"]
-        result["total_now"] = data["total_data"]["data"][-1]["price"]
+        avg_now = data["avg_data"]["data"][-1]["price"]
     except (TypeError, IndexError):  # no data, data[-1] does not exist
-        result["avg_now"] = 0
-        result["total_now"] = 0
+        avg_now = 0
+
+    try:
+        total_now = data["total_data"]["data"][-1]["price"]
+    except (TypeError, IndexError):  # no data, data[-1] does not exist
+        total_now = 0
+
+    result = {
+        "avg_now": avg_now,
+        "total_now": total_now,
+        "data": {
+            key: json.dumps(value, cls=ChartJSONEncoder) for key, value in data.items()
+        },
+    }
 
     for goal in goals:
         goal["avg_required"] = get_required_average_price(
