@@ -34,15 +34,6 @@ class ControlView(ChartMixin, EventPermissionRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if "refresh" in request.GET:
             invalidate_cache(request.event)
-            return redirect(
-                reverse(
-                    "plugins:pretix_stretchgoals:control",
-                    kwargs={
-                        "organizer": request.event.organizer.slug,
-                        "event": request.event.slug,
-                    },
-                )
-            )
         return super().dispatch(request, *args, **kwargs)
 
 
