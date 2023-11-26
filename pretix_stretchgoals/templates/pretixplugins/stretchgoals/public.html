@@ -20,7 +20,7 @@
     {% block content %}
         <h2>{% trans "Presale Goals" %}</h2>
 
-        {{ data.public_text|rich_text }}
+        {{ public_text|rich_text }}
 
         {% if significant %}
             {% if request.event.settings.stretchgoals_chart_totals %}
