@@ -1,11 +1,9 @@
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from pretix.control.permissions import EventPermissionRequiredMixin
 from pretix.control.views.event import EventSettingsFormView
-from pretix.presale.utils import event_view
 
 from .chart import get_chart_and_text
 from .forms import StretchgoalsSettingsForm
@@ -36,7 +34,6 @@ class ControlView(ChartMixin, EventPermissionRequiredMixin, TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-@method_decorator(event_view, name="dispatch")
 class PublicView(ChartMixin, TemplateView):
     template_name = "pretixplugins/stretchgoals/public.html"
 
