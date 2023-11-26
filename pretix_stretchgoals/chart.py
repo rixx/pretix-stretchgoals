@@ -5,6 +5,7 @@ from django.db.models import Avg, DateTimeField, Max, OuterRef, Subquery, Sum
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
 from i18nfield.strings import LazyI18nString
+from pretix.base.i18n import language
 from pretix.base.models import Item, OrderPayment, OrderPosition
 
 from .json import ChartJSONEncoder
@@ -152,9 +153,16 @@ def get_required_average_price(
 
 def get_public_text(event, items, include_pending, data=None):
     text = str(event.settings.get("stretchgoals_public_text", as_type=LazyI18nString))
-    if data:
-        text = text.format(**{"avg_now": data["avg_now"]})
-    return text
+    if not text:
+        return ""
+    result = {}
+    for locale in event.settings.locales:
+        with language(locale):
+            locale_text = str(text)
+            if data:
+                locale_text = locale_text.format(**{"avg_now": data["avg_now"]})
+            result[locale] = locale_text
+    return result
 
 
 def get_chart_and_text(event):

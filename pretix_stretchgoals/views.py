@@ -2,6 +2,7 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
+from i18nfield.strings import LazyI18nString
 from pretix.control.permissions import EventPermissionRequiredMixin
 from pretix.control.views.event import EventSettingsFormView
 
@@ -21,6 +22,7 @@ class ChartMixin:
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data()
         ctx.update(get_chart_and_text(self.request.event))
+        ctx["public_text"] = LazyI18nString(data=ctx["public_text"])
 
         return ctx
 
