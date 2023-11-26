@@ -152,7 +152,7 @@ def get_required_average_price(
 
 
 def get_public_text(event, items, include_pending, data=None):
-    text = str(event.settings.get("stretchgoals_public_text", as_type=LazyI18nString))
+    text = event.settings.get("stretchgoals_public_text", as_type=LazyI18nString)
     if not text:
         return ""
     result = {}
