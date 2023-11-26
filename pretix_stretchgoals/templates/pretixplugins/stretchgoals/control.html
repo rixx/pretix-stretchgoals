@@ -9,10 +9,9 @@
 {% block content %}
     <h1>
         {% trans "Stretch Goals" %}
-        <small><a href="{% url "plugins:pretix_stretchgoals:settings" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Settings" %}</a></small>
 
         {% if request.event.settings.stretchgoals_is_public %}
-            <small> · <a href="{% url "plugins:pretix_stretchgoals:public" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Public" %}</a></small>
+            <small> <a href="{% url "plugins:pretix_stretchgoals:public" organizer=request.organizer.slug event=request.event.slug %}">{% trans "Public" %}</a></small>
         {% endif %}
 
         <a href="?refresh" class="btn btn-xs btn-default"><i class="fa fa-refresh"></i></a>

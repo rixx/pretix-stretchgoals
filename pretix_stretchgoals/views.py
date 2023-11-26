@@ -29,7 +29,6 @@ class ChartMixin:
 
 class ControlView(ChartMixin, EventPermissionRequiredMixin, TemplateView):
     template_name = "pretixplugins/stretchgoals/control.html"
-    permission = "can_change_event_settings"
 
     def dispatch(self, request, *args, **kwargs):
         if "refresh" in request.GET:

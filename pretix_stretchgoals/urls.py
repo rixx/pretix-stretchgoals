@@ -4,7 +4,7 @@ from .views import ControlView, PublicView, SettingsView
 
 urlpatterns = [
     re_path(
-        r"^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/stretchgoals/settings/",
+        r"^control/event/(?P<organizer>[^/]+)/(?P<event>[^/]+)/settings/stretchgoals/",
         SettingsView.as_view(),
         name="settings",
     ),

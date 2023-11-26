@@ -6,15 +6,11 @@ from i18nfield.strings import LazyI18nString
 from pretix.base.models import Item
 from pretix.base.settings import settings_hierarkey
 from pretix.base.signals import event_copy_data
-from pretix.control.signals import nav_event
+from pretix.control.signals import nav_event, nav_event_settings
 
 
 @receiver(nav_event, dispatch_uid="stretchgoals_nav")
 def navbar_info(sender, request, **kwargs):
-    if not request.user.has_event_permission(
-        request.organizer, request.event, "can_change_event_settings"
-    ):
-        return []
     url = resolve(request.path_info)
     return [
         {
@@ -28,6 +24,29 @@ def navbar_info(sender, request, **kwargs):
                 },
             ),
             "active": url.namespace == "plugins:pretix_stretchgoals",
+        }
+    ]
+
+
+@receiver(nav_event_settings, dispatch_uid="stretchgoals_nav_settings")
+def navbar_settings(sender, request, **kwargs):
+    url = resolve(request.path_info)
+    if not request.user.has_event_permission(
+        request.organizer, request.event, "can_change_event_settings"
+    ):
+        return []
+    return [
+        {
+            "label": _("Stretch Goals"),
+            "url": reverse(
+                "plugins:pretix_stretchgoals:settings",
+                kwargs={
+                    "event": request.event.slug,
+                    "organizer": request.organizer.slug,
+                },
+            ),
+            "active": url.namespace == "plugins:pretix_stretchgoals"
+            and url.url_name == "settings",
         }
     ]
 
