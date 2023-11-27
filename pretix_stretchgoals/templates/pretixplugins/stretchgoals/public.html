@@ -18,11 +18,12 @@
     {% block title %}{% trans "Presale Goals" %} :: {{ event.name }}{% endblock %}
 
     {% block content %}
-        <h2>{% trans "Presale Goals" %}</h2>
-
-        {{ public_text|rich_text }}
+        {% block stretchgoals_content_title %}<h2>{% trans "Presale Goals" %}</h2>{% endblock %}
 
         {% if significant %}
+
+            {{ public_text|rich_text }}
+
             {% if request.event.settings.stretchgoals_chart_totals %}
                 {% include "pretixplugins/stretchgoals/chart.html" with data=data.total_data label="total" %}
                 {% if request.event.settings.stretchgoals_calculation_text %}
@@ -69,6 +70,8 @@
                 {% trans "There is not enough data available yet do provide meaningful statistics. Please check back later!" %}
             </div>
         {% endif %}
+
+        {% block stretchgoals_extra_content %}{% endblock %}
     {% endblock %}
 
 {% endif %}
