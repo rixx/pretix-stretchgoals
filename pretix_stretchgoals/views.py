@@ -3,7 +3,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 from i18nfield.strings import LazyI18nString
-from pretix.control.permissions import EventPermissionRequiredMixin
 from pretix.control.views.event import EventSettingsFormView
 
 from .chart import get_chart_and_text
@@ -27,10 +26,14 @@ class ChartMixin:
         return ctx
 
 
-class ControlView(ChartMixin, EventPermissionRequiredMixin, TemplateView):
+class ControlView(ChartMixin, TemplateView):
     template_name = "pretixplugins/stretchgoals/control.html"
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_event_permission(
+            request.organizer, request.event, "can_view_orders"
+        ):
+            raise Http404()
         if "refresh" in request.GET:
             invalidate_cache(request.event)
         return super().dispatch(request, *args, **kwargs)
@@ -50,6 +53,10 @@ class SettingsView(EventSettingsFormView):
     template_name = "pretixplugins/stretchgoals/settings.html"
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_event_permission(
+            request.organizer, request.event, "can_change_event_settings"
+        ):
+            raise Http404()
         if "delete" in request.GET:
             goals = get_goals(request.event)
             index = int(request.GET.get("delete", 1)) - 1
