@@ -147,7 +147,7 @@ def get_required_average_price(
 
     try:
         return round((target - total_now) / (total_count - current_count), 2)
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -178,9 +178,9 @@ def get_chart_and_text(event):
     event.settings._h.add_type(
         QuerySet,
         lambda queryset: ",".join([str(element.pk) for element in queryset]),
-        lambda pk_list: Item.objects.filter(pk__in=pk_list.split(","))
-        if pk_list
-        else [],
+        lambda pk_list: (
+            Item.objects.filter(pk__in=pk_list.split(",")) if pk_list else []
+        ),
     )
     items = event.settings.get("stretchgoals_items", as_type=QuerySet) or []
 
@@ -189,34 +189,38 @@ def get_chart_and_text(event):
     goals = get_goals(event)
     data = {
         "avg_data": {
-            "data": [
-                {
-                    "date": date.strftime("%Y-%m-%d"),
-                    "price": get_average_price(
-                        event, start_date, date, items, include_pending
-                    )
-                    or 0,
-                }
-                for date in get_date_range(start_date, end_date)
-            ]
-            if avg_chart
-            else None,
+            "data": (
+                [
+                    {
+                        "date": date.strftime("%Y-%m-%d"),
+                        "price": get_average_price(
+                            event, start_date, date, items, include_pending
+                        )
+                        or 0,
+                    }
+                    for date in get_date_range(start_date, end_date)
+                ]
+                if avg_chart
+                else None
+            ),
             "target": [goal.get("avg", 0) for goal in goals],
             "label": "avg",
         },
         "total_data": {
-            "data": [
-                {
-                    "date": date.strftime("%Y-%m-%d"),
-                    "price": get_total_price(
-                        event, start_date, date, items, include_pending
-                    )
-                    or 0,
-                }
-                for date in get_date_range(start_date, end_date)
-            ]
-            if total_chart
-            else None,
+            "data": (
+                [
+                    {
+                        "date": date.strftime("%Y-%m-%d"),
+                        "price": get_total_price(
+                            event, start_date, date, items, include_pending
+                        )
+                        or 0,
+                    }
+                    for date in get_date_range(start_date, end_date)
+                ]
+                if total_chart
+                else None
+            ),
             "target": [goal["total"] for goal in goals],
             "label": "total",
         },
@@ -259,12 +263,10 @@ def get_chart_and_text(event):
         goal["total_left"] = goal["total"] - result["total_now"]
 
     result["goals"] = goals
-    result[
-        "significant"
-    ] = not event.settings.stretchgoals_min_orders or get_base_queryset(
-        event, items, include_pending
-    ).count() >= event.settings.get(
-        "stretchgoals_min_orders", as_type=int
+    result["significant"] = (
+        not event.settings.stretchgoals_min_orders
+        or get_base_queryset(event, items, include_pending).count()
+        >= event.settings.get("stretchgoals_min_orders", as_type=int)
     )
     result["public_text"] = get_public_text(event, items, include_pending, data=result)
     result["last_generated"] = now()

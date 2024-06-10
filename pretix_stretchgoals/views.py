@@ -14,9 +14,9 @@ from .utils import get_goals, invalidate_cache, set_goals
 class ChartMixin:
     def get(self, request, *args, **kwargs):
         resp = super().get(request, *args, **kwargs)
-        resp[
-            "Content-Security-Policy"
-        ] = "script-src 'unsafe-eval' 'unsafe-inline'; style-src 'unsafe-inline'"
+        resp["Content-Security-Policy"] = (
+            "script-src 'unsafe-eval' 'unsafe-inline'; style-src 'unsafe-inline'"
+        )
         return resp
 
     def get_context_data(self, *args, **kwargs):
