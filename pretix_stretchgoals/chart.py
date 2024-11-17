@@ -253,12 +253,14 @@ def get_chart_and_text(event):
 
     for goal in goals:
         goal["avg_required"] = get_required_average_price(
-            event,
-            items,
-            include_pending,
-            goal["total"],
-            goal["amount"],
-            result["total_now"],
+            event=event,
+            items=items,
+            include_pending=include_pending,
+            target=goal["total"],
+            total_count=goal["amount"],
+            total_now=result["total_now"] or get_total_price(
+                event, start_date, end_date, items, include_pending
+            ),
         )
         goal["total_left"] = goal["total"] - result["total_now"]
 
