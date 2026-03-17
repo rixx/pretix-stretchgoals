@@ -1,5 +1,4 @@
 import json
-import pytz
 from datetime import date, datetime, timedelta
 from django.db.models import Avg, DateTimeField, Max, OuterRef, Subquery, Sum
 from django.db.models.query import QuerySet
@@ -40,7 +39,7 @@ def get_base_queryset(event, items, include_pending):
 
 
 def get_start_date(event, items, include_pending):
-    tz = pytz.timezone(event.settings.timezone)
+    tz = event.timezone
     start_date = event.settings.get("stretchgoals_start_date", as_type=date)
     if start_date:
         return start_date
@@ -54,7 +53,7 @@ def get_start_date(event, items, include_pending):
 
 
 def get_end_date(event, items, include_pending):
-    tz = pytz.timezone(event.settings.timezone)
+    tz = event.timezone
     end_date = event.settings.get("stretchgoals_end_date", as_type=date)
     if end_date:
         return end_date
@@ -81,7 +80,7 @@ def get_date_range(start_date, end_date):
 
 
 def get_average_price(event, start_date, end_date, items, include_pending):
-    tz = pytz.timezone(event.settings.timezone)
+    tz = event.timezone
     start_dt = datetime(
         start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz
     )
@@ -100,7 +99,7 @@ def get_average_price(event, start_date, end_date, items, include_pending):
 
 
 def get_total_price(event, start_date, end_date, items, include_pending):
-    tz = pytz.timezone(event.settings.timezone)
+    tz = event.timezone
     start_dt = datetime(
         start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz
     )
@@ -125,7 +124,7 @@ def get_required_average_price(
         return
     start_date = get_start_date(event, items, include_pending)
     end_date = get_end_date(event, items, include_pending)
-    tz = pytz.timezone(event.settings.timezone)
+    tz = event.timezone
     start_dt = datetime(
         start_date.year, start_date.month, start_date.day, 0, 0, 0, tzinfo=tz
     )
