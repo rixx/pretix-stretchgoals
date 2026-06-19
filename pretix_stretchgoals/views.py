@@ -14,7 +14,7 @@ class ChartMixin:
     def get(self, request, *args, **kwargs):
         resp = super().get(request, *args, **kwargs)
         resp["Content-Security-Policy"] = (
-            "script-src 'unsafe-eval' 'unsafe-inline'; style-src 'unsafe-inline'"
+            "script-src 'unsafe-eval'; style-src 'unsafe-inline'"
         )
         return resp
 

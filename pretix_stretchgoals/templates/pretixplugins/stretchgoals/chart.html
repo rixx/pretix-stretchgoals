@@ -17,33 +17,11 @@
                 {% trans "JavaScript is required to show the chart at this time, sorry!" %}
             </div>
         </noscript>
-        <div id="{{ label }}_chart" class="chart"></div>
+        <div class="chart"
+             data-stretchgoal-chart="{{ label }}"
+             data-chart-label="{% if label == 'avg' %}{% trans "Average price" %}{% elif label == 'total' %}{% trans "Total revenue" %}{% else %}{% endif %}"
+        >
+            {{ data|json_script }}
+        </div>
     </div>
 </div>
-
-<script type="application/json" id="{{ label }}-data">{{ data|safe }}</script>
-<script type="text/javascript">
-    $(function () {
-        $(".chart").css("height", "300px");
-
-        const data = JSON.parse($("#{{ label }}-data").html());
-
-        new Morris.Area({
-            element: '{{ label }}_chart',
-            goals: data.target,
-            data: data.data,
-            xkey: 'date',
-            ykeys: ['price'],
-            labels: [gettext({% if label == 'avg' %}'Average price'{% elif label == 'total' %}'Total revenue'{% else %}''{% endif %})],
-            yLabelFormat: function (x) { return x.toFixed(2) },
-            ymin: data.ymin || "auto",
-            postUnits: ' €',
-            smooth: false,
-            resize: true,
-            fillOpacity: 0.3,
-            behaveLikeLine: true,
-            goalLineColors: ["#33c33c"],
-            goalStrokeWidth: 4,
-        });
-    });
-</script>

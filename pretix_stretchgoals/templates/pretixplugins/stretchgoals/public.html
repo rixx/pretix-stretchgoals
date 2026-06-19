@@ -10,6 +10,7 @@
     {% block custom_header %}
         <script type="text/javascript" src="{% static "charts/raphael-min.js" %}"></script>
         <script type="text/javascript" src="{% static "charts/morris.js" %}"></script>
+        <script type="text/javascript" src="{% static "pretixplugins/stretchgoals/render_chart.js" %}"></script>
         {% compress css %}
             <link rel="stylesheet" href="{% static "charts/morris.scss" %}" type="text/x-scss"/>
         {% endcompress %}
