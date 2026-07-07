@@ -5,11 +5,11 @@ function renderChart(chartContainer) {
     $(chartContainer).css("height", "300px");
 
     const script = $(chartContainer).find("script");
-    const data = JSON.parse(script.innerHTML);
+    const data = JSON.parse(script.html());
     script.remove();
 
     new Morris.Area({
-        element: identifier + '_chart',
+        element: chartContainer,
         goals: data.target,
         data: data.data,
         xkey: 'date',
