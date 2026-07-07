@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load static %}
+{% load escapejson %}
 
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -21,7 +22,7 @@
              data-stretchgoal-chart="{{ label }}"
              data-chart-label="{% if label == 'avg' %}{% trans "Average price" %}{% elif label == 'total' %}{% trans "Total revenue" %}{% else %}{% endif %}"
         >
-            {{ data|json_script }}
+            <script type="application/json">{{ data|escapejson }}</script>
         </div>
     </div>
 </div>
